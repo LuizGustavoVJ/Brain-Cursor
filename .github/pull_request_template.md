@@ -17,4 +17,4 @@
 
 ## Notas para o revisor
 
-(Opcional) contexto extra para aprovação.
+Luiz: use **Approve** apenas — o merge é automático pelo Actions. Não clique em **Merge pull request**.

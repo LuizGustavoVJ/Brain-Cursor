@@ -25,9 +25,13 @@ Regras críticas (AGENTS.md e `usuario/memoria/git-fluxo-cit.md`):
 - Ordem card_release: `main` → push release vazia → branch de trabalho da release.
 - No **Brain-Cursor** (este repo), homologação = `staging`; promoção para `main` é **PR automático** `staging` → `main` após merge em staging.
 
-### Gaps vs GitLab CIT
+### Aprovação no GitHub (não clique em Merge)
 
-No cit legado, deploy homol é manual e o agente não mergeia staging. Aqui o GitHub automatiza merge pós-aprovação e abertura do PR de promoção; **aprovação humana** continua no PR para `staging` (Luiz).
+O GitHub sempre mostra o botão **Merge**, mas com proteção de branch ele fica **desabilitado** até CI verde + **1 Approve**.
+
+**Sua ação:** em *Files changed* → *Review changes* → **Approve** (comentário opcional). **Não** use *Merge pull request*.
+
+Depois do **Approve**, o workflow `auto-merge.yml` faz o merge sozinho (bot/Actions). O mesmo vale para PR `staging` → `main` (promoção).
 
 ## Fluxo CI/CD
 
@@ -46,7 +50,7 @@ flowchart LR
 |----------|---------|--------|
 | `ci.yml` | PR/push em `staging` | `scripts/ci-lint.sh`, `scripts/ci-test.sh` |
 | `notify.yml` | CI concluído (PR) | Notifica e-mail + Slack |
-| `auto-merge.yml` | Review `approved` | `enablePullRequestAutoMerge` → merge quando checks verdes |
+| `auto-merge.yml` | Review `approved` (Luiz) | Merge automático via API após checks |
 | `promote-main.yml` | Push em `staging` | Abre/atualiza PR `staging` → `main` |
 
 Check de status obrigatório sugerido: **`lint-and-test`** (job do workflow CI).
