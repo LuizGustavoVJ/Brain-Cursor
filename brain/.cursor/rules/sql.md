@@ -1,0 +1,15 @@
+---
+paths:
+  - "**/*.sql"
+  - "**/migrations/**"
+  - "application/models/**"
+---
+
+# SQL e migration
+
+- Consulta SQL ou migration não sai (entregar, executar, comitar) sem revisão do
+  `especialista-sql`. Registro em 1 linha no `_processo-revisoes.md` da pasta do card, ou no chat
+  fora de card. Mecanismo: `frota/gatilhos.md`.
+- Quem executa: produção é o usuário (você monta a query e explica); local e homologação é você,
+  sem perguntar. Pedir ao usuário que rode SQL em local ou homol é erro de processo.
+- Conexão, porta e schema: perfil `.claude/arquitetura/ambiente-local-<repo>.md` do repo atual.

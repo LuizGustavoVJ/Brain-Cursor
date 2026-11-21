@@ -1,0 +1,412 @@
+diff --git a/application/config/produtos_cancelamento.php b/application/config/produtos_cancelamento.php
+index 7c7624716..e087de79e 100644
+--- a/application/config/produtos_cancelamento.php
++++ b/application/config/produtos_cancelamento.php
+@@ -59,10 +59,6 @@ $config['produtos_cancelamento_status_ativos'] = array('ASSINANTE', 'INADIMPLENT
+ | PENDENTE DE VALIDACAO DO NEGOCIO:
+ |   1. 'ge' nao tem checkbox correspondente no formulario. Confirmar o que e a
+ |      linha e se deve virar uma opcao de cancelamento.
+-|   2. White Label nao e uma linha de produto nesta tabela. O indicativo e o
+-|      campo cnpj_white_label da tabela_centralizadora (16.156 clientes), que
+-|      NAO tem correlacao com 'ge'. Definir a regra antes de habilitar os dois
+-|      rotulos de White Label.
+ */
+ $config['produtos_cancelamento_mapa_linha'] = array(
+     'dp' => array(
+diff --git a/application/helpers/utils_helper.php b/application/helpers/utils_helper.php
+index a78367c7a..7909e0efe 100644
+--- a/application/helpers/utils_helper.php
++++ b/application/helpers/utils_helper.php
+@@ -222,7 +222,7 @@ if (!function_exists('confereDadosGanhoFarmerHubspot')) {
+ 			// $company['properties']['email_de_cobranca']['value'],
+ 			$deal['properties']['createdate']['value'],
+ 			$deal['properties']['closedate']['value'],
+-			$deal['properties']['amount_in_home_currency']['value'],
++			//$deal['properties']['amount_in_home_currency']['value'],
+ 			$deal['properties']['produto']['value'],
+ 			// $company['properties']['data_de_vencimento']['value'],
+ 			//$deal['properties']['quantidade_de_colaboradores__numero_exato_ou_proximo_']['value'],
+@@ -247,7 +247,7 @@ if (!function_exists('confereDadosGanhoFarmerHubspot')) {
+ 			// 14 => 'Email de Cobrança (DEAL - email_de_cobranca)',
+ 			4 => 'Data de criação (DEAL - createdate)',
+ 			5 => 'Data de Fechamento (DEAL - closedate)',
+-			6 => 'Valor (DEAL - amount_in_home_currency)',
++			//6 => 'Valor (DEAL - amount_in_home_currency)',
+ 			7 => 'Plano/Produto (DEAL - produto)',
+ 			// 19 => 'Data de Vencimento (DEAL - data_de_vencimento)',
+ 			//8 => 'Quantidade de Colaboradores (DEAL - quantidade_de_colaboradores__numero_exato_ou_proximo_)',
+diff --git a/application/hooks/SessionHook.php b/application/hooks/SessionHook.php
+index 3b40f7c56..7cb6ec82f 100644
+--- a/application/hooks/SessionHook.php
++++ b/application/hooks/SessionHook.php
+@@ -89,7 +89,7 @@ class SessionHook
+         $this->dados_user = $this->session->userdata();	
+ 		$this->classes_bypass = ["auth"];
+         if(ENVIRONMENT === 'development'){
+-            $this->output->enable_profiler( true );
++            $this->output->enable_profiler( false );
+         }
+     }
+     
+@@ -104,8 +104,19 @@ class SessionHook
+ 
+ 		if( ! in_array( $this->router->fetch_class() , self::$array_classes ) &&
+ 			! in_array( $this->router->fetch_method() , self::$array_methods ) ||
+-			( $this->router->fetch_class() == 'termo_aceite' && 
+-				( ! in_array( $this->router->fetch_method(), ['processaVisualizacaoTermo', 'processaAceiteTermo', 'proposta_view', 'get_info_company_api', 'validaDocumentoGestao'] ) )
++			( $this->router->fetch_class() == 'termo_aceite' &&
++				( ! in_array( $this->router->fetch_method(), [
++					'processaVisualizacaoTermo',
++					'processaAceiteTermo',
++					'proposta_view',
++					'get_info_company_api',
++					'validaDocumentoGestao',
++					'validaEmailGestao',
++					'verificarProdutoRadarPodeSerAdquirido',
++					'buscaInformacaoContratualVigente',
++					'buscaInformacaoMultibase',
++					'buscaNomeNegocioHubspot',
++				] ) )
+ 			)
+ 		){
+ 			if( $this->router->fetch_class() != "index" ){
+diff --git a/application/libraries/LogLib.php b/application/libraries/LogLib.php
+index da9e29600..815583404 100644
+--- a/application/libraries/LogLib.php
++++ b/application/libraries/LogLib.php
+@@ -10,10 +10,14 @@ class LogLib
+      * @var array<string, bool>
+      */
+     private static $monitoramentoAcoesWlEntregaCredito = [
++        'automacao_wl_diario_novo' => true,
+         'rotinaEntregaCreditosClientesWhiteLabelCrm' => true,
+         'rotinaEntregaCreditosClientesWhiteLabelGestao' => true,
+     ];
+ 
++    /** Agrupamento no e-mail quando o erro não possui IDEMP de parceiro. */
++    const MONITORAMENTO_WL_ENTREGA_CREDITO_IDEMP_GERAL = 0;
++
+     private $logs;
+     private $numeroTotalErros = 0;
+     private $response;
+@@ -450,11 +454,9 @@ class LogLib
+         $agrupados = [];
+ 
+         foreach ($this->monitoramentoWlErrosEntregaCredito as $linha) {
+-            $idParceiroWl = isset($linha['wl_id_parceiro']) ? (int) $linha['wl_id_parceiro'] : 0;
+-
+-            if ($idParceiroWl < 1) {
+-                continue;
+-            }
++            $idParceiroWl = isset($linha['wl_id_parceiro'])
++                ? (int) $linha['wl_id_parceiro']
++                : self::MONITORAMENTO_WL_ENTREGA_CREDITO_IDEMP_GERAL;
+ 
+             if (!isset($agrupados[$idParceiroWl])) {
+                 $agrupados[$idParceiroWl] = [];
+@@ -466,6 +468,16 @@ class LogLib
+         return $agrupados;
+     }
+ 
++    /**
++     * Quantidade de erros elegíveis ao e-mail detalhado por parceiro (buffer).
++     *
++     * @return int
++     */
++    public function contarErrosMonitoramentoWlEntregaCredito()
++    {
++        return count($this->monitoramentoWlErrosEntregaCredito);
++    }
++
+     /**
+      * Limpa o buffer temporário usado no e-mail de monitoramento WL.
+      *
+@@ -484,26 +496,32 @@ class LogLib
+      * @param array $dadosLog
+      * @return void
+      */
+-    private function registrarErroMonitoramentoWlEntregaCredito($acao, $mensagem, array $dadosLog)
++    private function resolverIdParceiroWlMonitoramento(array $dadosLog)
+     {
+-        $idParceiroWl = isset($dadosLog['wl_id_parceiro']) ? (int) $dadosLog['wl_id_parceiro'] : 0;
+-
+-        if ($idParceiroWl < 1) {
+-            return;
++        foreach (['wl_id_parceiro', 'id_emp', 'idemp', 'id'] as $chave) {
++            if (!empty($dadosLog[$chave]) && is_numeric($dadosLog[$chave])) {
++                return (int) $dadosLog[$chave];
++            }
+         }
+ 
+-        $idCliente = null;
++        return self::MONITORAMENTO_WL_ENTREGA_CREDITO_IDEMP_GERAL;
++    }
+ 
++    private function resolverIdClienteMonitoramento(array $dadosLog)
++    {
+         foreach (['idclifor', 'id_clifor'] as $chave) {
+             if (!empty($dadosLog[$chave]) && is_numeric($dadosLog[$chave])) {
+-                $idCliente = (int) $dadosLog[$chave];
+-                break;
++                return (int) $dadosLog[$chave];
+             }
+         }
+ 
+-        if ($idCliente < 1) {
+-            return;
+-        }
++        return 0;
++    }
++
++    private function registrarErroMonitoramentoWlEntregaCredito($acao, $mensagem, array $dadosLog)
++    {
++        $idParceiroWl = $this->resolverIdParceiroWlMonitoramento($dadosLog);
++        $idCliente = $this->resolverIdClienteMonitoramento($dadosLog);
+ 
+         $origemMotivo = (isset($dadosLog['message']) && is_string($dadosLog['message']) && $dadosLog['message'] !== '')
+             ? $dadosLog['message']
+@@ -513,6 +531,10 @@ class LogLib
+         $motivo = preg_replace('/^\[(INFO|SUCCESS|ERROR)\]\s*/i', '', $motivo);
+         $motivo = trim($motivo);
+ 
++        if ($motivo === '') {
++            $motivo = 'Erro na automação de entrega de crédito WL';
++        }
++
+         if (strlen($motivo) > 400) {
+             $motivo = substr($motivo, 0, 397) . '...';
+         }
+diff --git a/application/models/Cron_model.php b/application/models/Cron_model.php
+index bce8a12e2..0ad6efc7d 100644
+--- a/application/models/Cron_model.php
++++ b/application/models/Cron_model.php
+@@ -3682,7 +3682,10 @@ class Cron_model extends MY_Model {
+ 				$logLib->setLog(
+                     'rotinaEntregaCreditosClientesWhiteLabelCrm',
+                     '[ERROR] ' . $e->getMessage(),
+-                    $arrayTransaction,
++                    array_merge(
++                        is_array($arrayTransaction) ? $arrayTransaction : [],
++                        ['wl_id_parceiro' => $whiteLabel['ID']]
++                    ),
+                     LOG_STATUS_ERROR
+                 );
+ 				continue;
+@@ -4040,7 +4043,10 @@ class Cron_model extends MY_Model {
+ 				$logLib->setLog(
+                     'rotinaEntregaCreditosClientesWhiteLabelGestao',
+                     '[ERROR] ' . $e->getMessage() ." - Query: " . $this->crm->last_query(),
+-                    $arrayTransaction,
++                    array_merge(
++                        is_array($arrayTransaction) ? $arrayTransaction : [],
++                        ['wl_id_parceiro' => $whiteLabel['ID']]
++                    ),
+                     LOG_STATUS_ERROR
+                 );
+ 				$this->crm->trans_rollback();
+@@ -4195,43 +4201,79 @@ class Cron_model extends MY_Model {
+ 		return false;
+     }
+ 
+-    private function envioEmailDataLogs($logLib)
++    /**
++     * Destinatário do monitoramento da cron WL conforme ambiente (demanda 140152).
++     *
++     * @return string
++     */
++    private function obterEmailDestinatarioMonitoramentoWlEntregaCredito()
+     {
+-        $agrupados = $logLib->obterErrosMonitoramentoWlEntregaCreditoPorParceiro();
++        return ENVIRONMENT === 'production'
++            ? 'ti-corporativa@solides.com.br'
++            : 'bope@solides.com.br';
++    }
+ 
+-        if (empty($agrupados)) {
++    private function enviarEmailMonitoramentoWlEntregaCredito($paraEmail, $wlId, array $listaErros, $qtd = null)
++    {
++        if (empty($listaErros)) {
+             return false;
+         }
+ 
+-        $paraEmail = defined('EMAIL_BOPE') ? EMAIL_BOPE : 'ti-corporativa@solides.com.br';
+-        $enviouAlgum = false;
++        $wlId = (int) $wlId;
++        $wlIdRotulo = $wlId > 0 ? (string) $wlId : 'Geral';
++        $qtd = $qtd !== null ? (int) $qtd : count($listaErros);
++
++        $corpo = $this->load->view(
++            'cron/rebranding_2023/notificacao_erros_entrega_credito_wl',
++            [
++                'qtd' => $qtd,
++                'wlId' => $wlId,
++                'wlIdRotulo' => $wlIdRotulo,
++                'erros' => $listaErros,
++            ],
++            TRUE
++        );
+ 
+-        foreach ($agrupados as $wlId => $listaErros) {
+-            $wlId = (int) $wlId;
++        return enviar_email([
++            'email' => [$paraEmail],
++            'assunto' => 'Casos de erros na entrega de créditos automática WL - ' . $wlIdRotulo,
++            'mensagem' => $corpo,
++        ]);
++    }
+ 
+-            if ($wlId < 1 || empty($listaErros)) {
+-                continue;
+-            }
++    private function envioEmailDataLogs($logLib)
++    {
++        $totalErros = $logLib->getNumeroTotalErros();
+ 
+-            $qtd = count($listaErros);
++        if ($totalErros === 0) {
++            return false;
++        }
+ 
+-            $corpo = $this->load->view(
+-                'cron/rebranding_2023/notificacao_erros_entrega_credito_wl',
+-                [
+-                    'qtd' => $qtd,
+-                    'wlId' => $wlId,
+-                    'erros' => $listaErros,
+-                ],
+-                TRUE
+-            );
++        $paraEmail = $this->obterEmailDestinatarioMonitoramentoWlEntregaCredito();
++        $agrupados = $logLib->obterErrosMonitoramentoWlEntregaCreditoPorParceiro();
++        $enviouAlgum = false;
+ 
+-            $assunto = 'Casos de erros na entrega de créditos automática WL - ' . $wlId;
++        foreach ($agrupados as $wlId => $listaErros) {
++            if ($this->enviarEmailMonitoramentoWlEntregaCredito($paraEmail, $wlId, $listaErros)) {
++                $enviouAlgum = true;
++            }
++        }
+ 
+-            if (enviar_email([
+-                'email' => [$paraEmail],
+-                'assunto' => $assunto,
+-                'mensagem' => $corpo,
+-            ])) {
++        $errosForaDoBuffer = $totalErros - $logLib->contarErrosMonitoramentoWlEntregaCredito();
++
++        if ($errosForaDoBuffer > 0) {
++            $listaResumo = [[
++                'idclifor_cliente' => 0,
++                'motivo' => $errosForaDoBuffer . ' ocorrência(s) sem detalhamento no monitoramento (consultar citlog_automacoes).',
++                'acao' => 'automacao_wl_diario_novo',
++            ]];
++
++            if ($this->enviarEmailMonitoramentoWlEntregaCredito(
++                $paraEmail,
++                LogLib::MONITORAMENTO_WL_ENTREGA_CREDITO_IDEMP_GERAL,
++                $listaResumo,
++                $errosForaDoBuffer
++            )) {
+                 $enviouAlgum = true;
+             }
+         }
+diff --git a/application/models/Hubspot_model.php b/application/models/Hubspot_model.php
+index 2343dd701..ce0c54011 100644
+--- a/application/models/Hubspot_model.php
++++ b/application/models/Hubspot_model.php
+@@ -6,7 +6,7 @@ class Hubspot_model extends MY_Model {
+ 	{
+ 		parent::__construct();
+ 
+-		$this->solides_business = $this->load->database( 'solides_business', TRUE );
++		//$this->solides_business = $this->load->database( 'solides_business', TRUE );
+ 	}
+ 
+ 	public function get_ids_crms()
+diff --git a/application/services/UnifiedAuthenticationService.php b/application/services/UnifiedAuthenticationService.php
+index 1ce0ba807..25109a23e 100644
+--- a/application/services/UnifiedAuthenticationService.php
++++ b/application/services/UnifiedAuthenticationService.php
+@@ -35,6 +35,42 @@ class UnifiedAuthenticationService
+             return $retorno;
+         }
+ 
++        // [PATCH LOCAL - NAO COMMITAR] Stub do auth unificado para o ambiente
++        // de desenvolvimento, enquanto nao temos as credenciais de staging.
++        // Ativa com UNIFIED_AUTH_STUB_CNPJS=cnpj1,cnpj2 no ambiente.
++        if (ENVIRONMENT === 'development' && getenv('UNIFIED_AUTH_STUB_CNPJS')) {
++            $cnpjsStub = array_values(array_filter(array_map(
++                'trim',
++                explode(',', getenv('UNIFIED_AUTH_STUB_CNPJS'))
++            )));
++
++            $retorno['success'] = true;
++            $retorno['encontrado'] = true;
++            $retorno['ativo'] = true;
++            $retorno['permitido'] = true;
++            $retorno['origem'] = 'stub_local';
++            $retorno['motivo_interno'] = 'stub_local_permitido';
++            // Produto fake com clientId, para reproduzir o caso "Folha Digital
++            // (folha-cli)" observado em homologacao.
++            $produtosStub = array();
++            foreach ($cnpjsStub as $cnpjStub) {
++                $produtosStub[] = array(
++                    'id' => 'folha-cli',
++                    'name' => 'Folha Digital',
++                    'clientId' => 'folha-cli',
++                    'cnpj' => $cnpjStub,
++                );
++            }
++
++            $retorno['dados'] = array(
++                'cnpjs' => $cnpjsStub,
++                'organizacoes' => array(),
++                'produtos' => $produtosStub,
++            );
++
++            return $retorno;
++        }
++
+         $token = $this->obterToken();
+         if (empty($token['success']) || empty($token['token'])) {
+             $retorno['motivo_interno'] = 'auth_token_indisponivel';
+diff --git a/application/views/cron/rebranding_2023/notificacao_erros_entrega_credito_wl.php b/application/views/cron/rebranding_2023/notificacao_erros_entrega_credito_wl.php
+index 61e9758c8..d35b12d73 100644
+--- a/application/views/cron/rebranding_2023/notificacao_erros_entrega_credito_wl.php
++++ b/application/views/cron/rebranding_2023/notificacao_erros_entrega_credito_wl.php
+@@ -13,7 +13,7 @@
+                 </tr>
+                 <tr>
+                     <td style="padding: 10px 40px 20px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #4D4D4D; text-align: center;">
+-                        Segue a lista detalhada de erros por clientes do parceiro <strong><?php echo (int) $wlId; ?></strong>:
++                        Segue a lista detalhada de erros por clientes do parceiro <strong><?php echo htmlspecialchars(isset($wlIdRotulo) ? $wlIdRotulo : (string) (int) $wlId, ENT_QUOTES, 'UTF-8'); ?></strong>:
+                     </td>
+                 </tr>
+                 <tr>
+@@ -21,7 +21,7 @@
+                         <ul style="margin: 0; padding-left: 20px;">
+                             <?php foreach ($erros as $erro): ?>
+                                 <li style="margin-bottom: 8px;">
+-                                    [<strong><?php echo (int) $erro['idclifor_cliente']; ?></strong>] - Motivo: <?php echo htmlspecialchars($erro['motivo'], ENT_QUOTES, 'UTF-8'); ?>
++                                    [<strong><?php echo !empty($erro['idclifor_cliente']) ? (int) $erro['idclifor_cliente'] : 'N/A'; ?></strong>] - Motivo: <?php echo htmlspecialchars($erro['motivo'], ENT_QUOTES, 'UTF-8'); ?>
+                                 </li>
+                             <?php endforeach; ?>
+                         </ul>
+diff --git a/index.php b/index.php
+index 593d04928..405f1fa26 100644
+--- a/index.php
++++ b/index.php
+@@ -340,8 +340,11 @@ switch( ENVIRONMENT ){
+  */
+ require_once(__DIR__ . '/vendor/autoload.php');
+ 
+-$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../', 'cit-' . ENVIRONMENT . '.env');
+-$dotenv->load();
++$dotenvFile = 'cit-' . ENVIRONMENT . '.env';
++$dotenvDir = __DIR__ . '/..';
++if (is_readable($dotenvDir . DIRECTORY_SEPARATOR . $dotenvFile)) {
++	\Dotenv\Dotenv::createImmutable($dotenvDir, $dotenvFile)->safeLoad();
++}
+ 
+ /*
+  * --------------------------------------------------------------------
