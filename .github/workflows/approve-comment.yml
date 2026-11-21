@@ -1,0 +1,61 @@
+name: Approve via comment
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+
+jobs:
+  merge-on-approve:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/approve') &&
+      github.event.comment.user.login == 'LuizGustavoVJ'
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const { owner, repo } = context.repo;
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: issue.number,
+            });
+            if (pr.state !== 'open') {
+              core.info('PR já fechado.');
+              return;
+            }
+            if (pr.base.ref === 'staging') {
+              for (let i = 0; i < 40; i++) {
+                const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
+                  owner,
+                  repo,
+                  ref: pr.head.sha,
+                });
+                const ctx = combined.statuses.find(s => s.context === 'lint-and-test');
+                if (ctx?.state === 'success') break;
+                if (ctx?.state === 'failure' || ctx?.state === 'error') {
+                  throw new Error('CI lint-and-test falhou.');
+                }
+                if (i === 39) throw new Error('Timeout CI');
+                await new Promise(r => setTimeout(r, 10000));
+              }
+            }
+            await github.rest.pulls.merge({
+              owner,
+              repo,
+              pull_number: issue.number,
+              merge_method: 'merge',
+            });
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issue.number,
+              body: 'Merge automático após `/approve` de @LuizGustavoVJ.',
+            });

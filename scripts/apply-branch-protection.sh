@@ -33,8 +33,9 @@ protect_branch() {
 EOF
 }
 
-protect_branch staging 1
-protect_branch main 1
+# Solo maintainer: autor não pode Approve o próprio PR no GitHub — exige 0 reviews; aprovação = comentário /approve
+protect_branch staging 0
+protect_branch main 0
 
 gh api --method PATCH "repos/${REPO}" -f delete_branch_on_merge=true >/dev/null
 echo "delete_branch_on_merge=true (só main e staging permanecem após merge dos PRs)."

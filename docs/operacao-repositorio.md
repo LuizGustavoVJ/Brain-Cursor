@@ -29,9 +29,13 @@ Regras críticas (AGENTS.md e `usuario/memoria/git-fluxo-cit.md`):
 
 O GitHub sempre mostra o botão **Merge**, mas com proteção de branch ele fica **desabilitado** até CI verde + **1 Approve**.
 
-**Sua ação:** em *Files changed* → *Review changes* → **Approve** (comentário opcional). **Não** use *Merge pull request*.
+**Sua ação (repositório solo):** o GitHub **não** deixa o autor marcar **Approve** no próprio PR. Com CI verde, comente no PR:
 
-Depois do **Approve**, o workflow `auto-merge.yml` faz o merge sozinho (bot/Actions). O mesmo vale para PR `staging` → `main` (promoção).
+`/approve`
+
+O workflow `approve-comment.yml` faz o merge. **Não** use *Merge pull request* manualmente, salvo emergência.
+
+(O workflow `auto-merge.yml` por review continua útil se outro usuário for revisor no futuro.)
 
 ## Fluxo CI/CD
 

@@ -17,4 +17,4 @@
 
 ## Notas para o revisor
 
-Luiz: use **Approve** apenas — o merge é automático pelo Actions. Não clique em **Merge pull request**.
+Luiz: com CI verde, comente **`/approve`** neste PR (autor não pode usar Approve no GitHub). O Actions mergeia.
