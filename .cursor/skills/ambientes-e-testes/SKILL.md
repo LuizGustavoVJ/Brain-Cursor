@@ -23,7 +23,7 @@ Comando e porta variam por projeto — ver o perfil `arquitetura/ambiente-local-
 
 ## Três projects Playwright
 
-Cada projeto Solides com suíte Playwright define os mesmos três `projects` em `testes/playwright.config.ts` (no cit: `testes/E2E/specs/`, `testes/local/specs/`, `testes/homol/specs/`):
+Cada projeto Solides com suíte Playwright define os mesmos três `projects` em `testes/playwright.config.ts` (ex.: `testes/E2E/specs/`, `testes/local/specs/`, `testes/homol/specs/`):
 
 | Project | Etapa | Alvo | Comando |
 |---------|-------|------|---------|

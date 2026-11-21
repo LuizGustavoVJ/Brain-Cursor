@@ -9,7 +9,7 @@ metadata:
 ---
 
 Inventário conferido em 21/08/2026 (`.cursor/scripts/mcp.sh checar`); revisto em 27/08/2026:
-**4 servidores, todos no escopo de usuário** — o `.mcp.json` do repo `cit` está **vazio**.
+**4 servidores, todos no escopo de usuário** — o `.mcp.json` do repositório de produto pode estar **vazio** (credenciais em `~/.cursor/mcp.json`).
 
 | Servidor | Escopo | Estado |
 |---|---|---|

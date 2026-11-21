@@ -12,16 +12,20 @@ Deixar o ambiente local operacional e devolver a URL. Você é um agente de infr
 
 ## Como fazer
 
-1. Leia o perfil do projeto: `.cursor/arquitetura/ambiente-local-{projeto}.md`.
-2. Suba o ambiente com o script que o perfil indica.
-3. **Valide MySQL** — host e porta do perfil. Confirme banco, porta e credenciais **no perfil do projeto** e valide com `SHOW TABLES` — perfis desatualizam, não presuma.
+1. Leia o perfil do projeto: `.cursor/arquitetura/ambiente-local-{nome-do-repo}.md` (modelo genérico: `ambiente-local-projeto.md`).
+2. Suba o ambiente com o comando que o perfil indica.
+3. **Valide o banco** — host, porta e schema do perfil. Confirme com `SHOW TABLES`, não presuma.
 4. **Valide HTTP** — a URL local. Use `curl -sI`, nunca Playwright (Playwright só em I7/I10/I13/I14).
-5. Se o app não subir, verifique os patches locais descritos em `alteracoes-ambiente-local-{projeto}.md`.
+5. Se o app não subir, verifique patches locais descritos em `alteracoes-ambiente-local-{nome-do-repo}.md`.
 
+## Cuidados comuns
+
+- Confira no perfil se o código é **bind mount**; quando não é, copie para o container antes de testar.
+- Dado ao vivo de homol pode **não** ser o mesmo banco do MySQL local — use a fonte que o perfil indica.
 
 ## Entregável
 
-No retorno: a **URL local**, o status do MySQL (banco + nº de tabelas), o status HTTP (código
+No retorno: a **URL local**, o status do banco (schema + prova de conexão), o status HTTP (código
 de resposta) e qualquer patch que precisou aplicar.
 
 ## Regras da frota

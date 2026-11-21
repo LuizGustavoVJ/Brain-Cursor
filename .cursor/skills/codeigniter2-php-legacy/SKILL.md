@@ -9,10 +9,8 @@ description: >-
 # CodeIgniter 3 + PHP legado — Solides
 
 > Aplica-se aos projetos Solides em **CodeIgniter 3 / PHP legado**. Versão exata, PHP, caminhos e
-> env variam por projeto → ver o perfil `arquitetura/ambiente-local-{projeto}.md`. No **cit**,
-> confirmado `CI_VERSION` = `3.0.6` em [`system/core/CodeIgniter.php:58`](../../../system/core/CodeIgniter.php#L58)
-> — projetos mais antigos da frota podem estar em CI2 genuíno; conferir a constante antes de aplicar
-> o padrão de construtor abaixo.
+> env variam por projeto → ver o perfil `arquitetura/ambiente-local-{projeto}.md`. Confirme
+> `CI_VERSION` em `system/core/CodeIgniter.php` — projetos mais antigos podem estar em CI2 genuíno.
 
 ## Documentação oficial (consultar quando necessário)
 
@@ -23,13 +21,13 @@ description: >-
 | Models | https://codeigniter.com/userguide3/general/models.html |
 | Active Record (Query Builder) | https://codeigniter.com/userguide3/database/query_builder.html |
 
-**Versão do projeto (cit):** CI **3.0.6** (não CI2, não CI4).
+**Versão:** conferir no repo (CI3 vs CI2 vs CI4).
 
 ## Estrutura do projeto
 
 ```
 application/
-├── controllers/     # Auth, Clientes, Lovecrm*, Orcamento, Trial, ...
+├── controllers/     # um controller por área de negócio
 ├── models/          # *_model.php — Active Record
 ├── views/
 ├── helpers/
@@ -45,7 +43,7 @@ system/              # Core CI3 — evitar alterar
   [`Beneficios.php:11-13`](../../../application/controllers/Beneficios.php#L11),
   [`Cliente.php:4-6`](../../../application/controllers/Cliente.php#L4),
   [`Comercial.php:6-8`](../../../application/controllers/Comercial.php#L6).
-  **Não** é `parent::Controller()` (esse era o padrão CI2 antigo — não existe no cit).
+  **Não** é `parent::Controller()` (padrão CI2 antigo).
 - Models: `$this->db->get()`, `$this->db->where()`, `$this->db->insert()`
 - URLs: `site_url('controller/method')`
 - `ENVIRONMENT`: `development` (local) · `production` (deploy). **Homol é ambiente externo** — acesso por URL + usuário/senha, **sem subir ambiente local** (ver [ambientes-e-testes](../ambientes-e-testes/SKILL.md))

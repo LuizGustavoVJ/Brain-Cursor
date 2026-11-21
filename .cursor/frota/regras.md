@@ -38,8 +38,8 @@ card. Não é questão de ter OK — é não fazer.
 1. `<card>_release` a partir da `master`/`main` atualizada;
 2. push da release **sem nenhuma alteração**;
 3. branch de trabalho `<card>_<descricao>` a partir da release;
-4. commit e push só ao final do trabalho, com OK explícito — e antes, `.cursor/scripts/local.sh
-   restore-repo` (nada de patch local em commit ou MR).
+4. commit e push só ao final do trabalho, com OK explícito — e antes, reverter patches locais
+   conforme `alteracoes-ambiente-local-{repo}.md` (nada de patch local em commit ou MR).
 
 ## 4. Banco de dados
 

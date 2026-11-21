@@ -158,7 +158,7 @@ O Brain automatiza execução, **não decisão**. Permanecem humanos, por desenh
 > **Por que o plugin mora fora de `.cursor/`:** ele é **artefato gerado** a partir de `agents/`,
 > `commands/`, `scripts/` e `frota/`. Artefato gerado dentro da pasta de configuração passa a
 > parecer uma segunda fonte de verdade — e foi exatamente essa confusão que motivou tirá-lo de lá.
-> A fonte é o `.cursor/` deste repositório; o plugin é a cópia generalizada, sem os fatos do cit.
+> A fonte é o `.cursor/` deste repositório; o plugin é a cópia generalizada, sem os fatos do repo.
 
 ## Distribuição: de `propagar.sh` para plugin — caminho de migração (não aplicado)
 
@@ -174,10 +174,10 @@ um plugin generalizado em `~/solides-brain-plugin` (agentes, comandos, scripts, 
 | Arquivo próprio do repo | `proprio.txt` no destino | fica no `.cursor/` do repo, sem conflito com o plugin |
 | `AGENTS.md`, `rules/`, `settings.json` | viajam | **não** viajam em plugin — continuariam com o `propagar.sh` (ou num `AGENTS.md` mínimo por repo) |
 | Nome dos agentes/comandos | `/plano`, `revisor-codigo` | namespaced pelo plugin (`/solides-brain:plano`); hooks do `settings.json` do repo e do plugin somam |
-| Fato específico do cit | `homol.sh` e perfis não viajam | o gerador **generaliza** (SECOES_LOCAIS/SUBSTITUICOES) — precisa acompanhar cada agente novo |
+| Fato específico do repo | `homol.sh` e perfis não viajam | o gerador **generaliza** (SECOES_LOCAIS/SUBSTITUICOES) — precisa acompanhar cada agente novo |
 | Risco | poda errada apaga arquivo do destino (mitigado por backup e origem única) | plugin desatualizado na máquina; dois Brains ativos se a pasta copiada não for removida |
 
-**Passos, quando decidir migrar:** (1) `gerar_plugin.py` e conferir no stdout que todo fato do cit
+**Passos, quando decidir migrar:** (1) `gerar_plugin.py` e conferir no stdout que todo fato de produto
 foi generalizado; (2) `/plugin marketplace add ~/solides-brain-plugin` e `/plugin install
 solides-brain` numa máquina de teste; (3) num repo piloto, remover `agents/ commands/ scripts/
 frota/` copiados (backup antes) e manter só `AGENTS.md`, `rules/`, `settings.json` e o que é próprio;

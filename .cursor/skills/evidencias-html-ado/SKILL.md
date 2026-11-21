@@ -1,7 +1,7 @@
 ---
 name: evidencias-html-ado
 description: >-
-  Produz e valida HTML do Solides CRM para Azure DevOps (I2-html, I2-val, I9,
+  Produz e valida HTML de evidências Solides para Azure DevOps (I2-html, I2-val, I9,
   I11, I14, I15). Use ao montar plano.html, evidencias.html ou
   evidenciashomol.html, embutir prints ou validar conformidade com análise e
   plano.
@@ -16,11 +16,9 @@ Guias: [documento-evidencias-html.md](../../implementacao/documento-evidencias-h
 
 **Template canônico:** [`template-evidencias.html`](template-evidencias.html) — copiar e preencher. **Sempre** produzir o HTML nesse padrão.
 
-Cards de referência (padrão aprovado pelo usuário):
-- `partners`: `docs/evidencias/html/alteracao-cnpj-alfa-numerico/149212-Desenvolvimento-de-alteracoes-CNPJ-Alfanumerico/evidencias.html`
-- `solides-crm`: `docs/evidencias/html/consumo-creditos-profiler/150225-Consumo-de-creditos-base-CRM/evidencias.html`
-- `partners`: `docs/evidencias/html/transferencia-de-base/153391-Transferencia-de-base/evidencias.html`
-- `cit`: `docs/evidencias/html/alteracao-mensalidade/150624-Apoio-Ticket-2151687-alteracao-mensalidades/evidencias.html` — exemplo **neste repositório**, idêntico ao template
+Cards de referência: use um `evidencias.html` já **Aprovado** no repositório de produto
+(`docs/evidencias/html/{tema}/{card-id}-{titulo}/evidencias.html`). O template neste harness é
+[`template-evidencias.html`](template-evidencias.html).
 
 Regras de ouro:
 1. **HTML completo** — `<!DOCTYPE html>` + `<html lang="pt-BR">` + `<head>` com `<meta charset>`, `<meta viewport>`, `<title>` e `<style>` (CSS com `:root`). **Não** usar só `<div>` com estilos inline soltos.
@@ -38,8 +36,8 @@ docs/evidencias/html/{tema-slug}/{card-id}-{Titulo-Slug}/evidencias.html       #
 docs/evidencias/html/{tema-slug}/{card-id}-{Titulo-Slug}/evidenciashomol.html  # I14, I15
 ```
 
-- **`{tema-slug}`** — tema/assunto em kebab-case (ex.: `login-unificado-lovecrm`).
-- **`{Titulo-Slug}`** — `{card-id}-Titulo-Do-Card-Em-Kebab-Capitalizado` (ex.: `152069-Login-Unificado-Parceiros-LoveCRM`).
+- **`{tema-slug}`** — tema/assunto em kebab-case (ex.: `login-unificado-exemplo`).
+- **`{Titulo-Slug}`** — `{card-id}-Titulo-Do-Card-Em-Kebab-Capitalizado` (ex.: `152069-Login-Unificado-Parceiros`).
 
 ### `plano.html` (I2-html) — mesmo `<style>`, corpo diferente
 

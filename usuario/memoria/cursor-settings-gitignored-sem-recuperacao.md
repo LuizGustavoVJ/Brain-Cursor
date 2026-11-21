@@ -8,7 +8,7 @@ metadata:
   modified: 2026-08-05T21:21:38.318Z
 ---
 
-Em 2026-08-05, `.cursor/settings.json` estava **gitignored** em `cit`, `debt-processing-service`, `gestao`, `hubspot-adapter`, `ibc-assessment`, `omie-adapter`, `partners` e `solides-crm` — só o `checkout` tinha o arquivo versionado. Não há histórico git para restaurar.
+Em 2026-08-05, `.cursor/settings.json` estava **gitignored** na maioria dos repositórios Solides — só alguns tinham o arquivo versionado. Não há histórico git para restaurar.
 
 **Why:** qualquer sobrescrita de `.cursor/` nesses repos é irreversível pelo git; o único caminho de volta é um backup feito antes.
 

@@ -1,0 +1,45 @@
+name: Promote staging to main
+
+on:
+  push:
+    branches: [staging]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open-promotion-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Criar ou atualizar PR staging → main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git fetch origin main staging
+          if git diff --quiet origin/main..origin/staging; then
+            echo "staging e main já estão alinhadas — nada a promover."
+            exit 0
+          fi
+          TITLE="Promoção: staging → main ($(date -u +%Y-%m-%dT%H:%MZ))"
+          BODY="PR automático após merge em \`staging\`. Revisão em \`main\` pode ser 0 se a aprovação ocorreu no PR para staging (ver docs/operacao-repositorio.md)."
+          EXISTING=$(gh pr list --base main --head staging --state open --json number -q '.[0].number' || true)
+          if [ -n "$EXISTING" ] && [ "$EXISTING" != "null" ]; then
+            gh pr edit "$EXISTING" --title "$TITLE" --body "$BODY"
+            echo "Atualizado PR #$EXISTING"
+          else
+            gh pr create --base main --head staging --title "$TITLE" --body "$BODY"
+          fi
+
+      - name: Habilitar auto-merge do PR de promoção
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NUM=$(gh pr list --base main --head staging --state open --json number -q '.[0].number')
+          [ -n "$NUM" ] || exit 0
+          gh pr merge "$NUM" --auto --merge || echo "Auto-merge pode exigir checks/proteção em main"
