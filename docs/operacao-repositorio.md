@@ -57,6 +57,8 @@ Check de status obrigatório sugerido: **`lint-and-test`** (job do workflow CI).
 
 Proteção de branch: `bash scripts/apply-branch-protection.sh` (requer `gh` com permissão admin no repo).
 
+**Settings → Actions → General:** permissões **Read and write** e marque **Allow GitHub Actions to create and approve pull requests** (senão `promote-main` falha com `createPullRequest`).
+
 ## Secrets obrigatórios (Settings → Secrets → Actions)
 
 | Secret | Uso |
