@@ -1,0 +1,122 @@
+name: Notify
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event.workflow_run.event == 'pull_request' &&
+          github.event.workflow_run.conclusion != 'cancelled' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolver PR e corpo
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const { owner, repo } = context.repo;
+            const pulls = await github.paginate(
+              github.rest.pulls.list,
+              { owner, repo, state: 'open', per_page: 100 }
+            );
+            const pr = pulls.find(p => p.head.sha === run.head_sha);
+            if (!pr) {
+              core.setFailed('Nenhum PR aberto com head_sha=' + run.head_sha);
+              return;
+            }
+            const full = await github.rest.pulls.get({
+              owner, repo, pull_number: pr.number,
+            });
+            core.setOutput('number', String(pr.number));
+            core.setOutput('title', pr.title);
+            core.setOutput('url', pr.html_url);
+            core.setOutput('branch', pr.head.ref);
+            const fs = require('fs');
+            fs.writeFileSync('pr-body.md', full.data.body || '');
+            core.setOutput('conclusion', run.conclusion);
+
+      - name: Montar contexto (card ADO, links)
+        id: ctx
+        if: steps.pr.outcome == 'success'
+        run: |
+          python3 scripts/ci-extract-pr-context.py \
+            "${{ steps.pr.outputs.branch }}" \
+            "$(cat pr-body.md)" \
+            "${{ steps.pr.outputs.number }}" \
+            "${{ steps.pr.outputs.title }}" \
+            "${{ steps.pr.outputs.url }}" > /tmp/ctx.json
+          echo "card=$(jq -r .card /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
+          echo "ado_url=$(jq -r .ado_url /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
+          echo "pr_title=$(jq -r .pr_title /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Assunto e corpo
+        id: mail
+        if: steps.pr.outcome == 'success'
+        run: |
+          CONCLUSION="${{ steps.pr.outputs.conclusion }}"
+          if [ "$CONCLUSION" = "success" ]; then
+            SUBJECT="PR para aprovar — #${{ steps.pr.outputs.number }} (${{ steps.ctx.outputs.card }})"
+            INTRO="Os checks de CI passaram. A aprovação de Luiz está pendente no GitHub."
+          else
+            SUBJECT="[FALHA CI] PR #${{ steps.pr.outputs.number }} — ${{ steps.ctx.outputs.card }}"
+            INTRO="O workflow CI falhou (conclusão: $CONCLUSION). Corrija antes de aprovar."
+          fi
+          {
+            echo "$INTRO"
+            echo ""
+            echo "Card: ${{ steps.ctx.outputs.card }}"
+            echo "ADO: ${{ steps.ctx.outputs.ado_url }}"
+            echo "PR #${{ steps.pr.outputs.number }}: ${{ steps.pr.outputs.url }}"
+            echo "Título: ${{ steps.ctx.outputs.pr_title }}"
+            echo "Branch: ${{ steps.pr.outputs.branch }}"
+            echo "Run CI: ${{ github.event.workflow_run.html_url }}"
+          } > /tmp/notify-body.txt
+          echo "subject=$SUBJECT" >> "$GITHUB_OUTPUT"
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          cat /tmp/notify-body.txt >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: E-mail (SMTP)
+        if: steps.pr.outcome == 'success'
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        continue-on-error: true
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: ${{ steps.mail.outputs.subject }}
+          to: ${{ secrets.NOTIFY_EMAIL_TO }}
+          from: ${{ secrets.SMTP_FROM }}
+          body: ${{ steps.mail.outputs.body }}
+          secure: true
+
+      - name: Slack (webhook)
+        if: steps.pr.outcome == 'success'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL não configurado — veja docs/operacao-repositorio.md"
+            exit 0
+          fi
+          payload=$(jq -n \
+            --arg text "${{ steps.mail.outputs.subject }}
+
+${{ steps.mail.outputs.body }}" \
+            '{text: $text}')
+          curl -fsS -X POST -H 'Content-type: application/json' \
+            --data "$payload" "$SLACK_WEBHOOK_URL"
