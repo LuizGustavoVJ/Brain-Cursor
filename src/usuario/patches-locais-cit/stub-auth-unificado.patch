@@ -1,0 +1,47 @@
+diff --git a/application/services/UnifiedAuthenticationService.php b/application/services/UnifiedAuthenticationService.php
+index 1ce0ba807..25109a23e 100644
+--- a/application/services/UnifiedAuthenticationService.php
++++ b/application/services/UnifiedAuthenticationService.php
+@@ -35,6 +35,42 @@ class UnifiedAuthenticationService
+             return $retorno;
+         }
+ 
++        // [PATCH LOCAL - NAO COMMITAR] Stub do auth unificado para o ambiente
++        // de desenvolvimento, enquanto nao temos as credenciais de staging.
++        // Ativa com UNIFIED_AUTH_STUB_CNPJS=cnpj1,cnpj2 no ambiente.
++        if (ENVIRONMENT === 'development' && getenv('UNIFIED_AUTH_STUB_CNPJS')) {
++            $cnpjsStub = array_values(array_filter(array_map(
++                'trim',
++                explode(',', getenv('UNIFIED_AUTH_STUB_CNPJS'))
++            )));
++
++            $retorno['success'] = true;
++            $retorno['encontrado'] = true;
++            $retorno['ativo'] = true;
++            $retorno['permitido'] = true;
++            $retorno['origem'] = 'stub_local';
++            $retorno['motivo_interno'] = 'stub_local_permitido';
++            // Produto fake com clientId, para reproduzir o caso "Folha Digital
++            // (folha-cli)" observado em homologacao.
++            $produtosStub = array();
++            foreach ($cnpjsStub as $cnpjStub) {
++                $produtosStub[] = array(
++                    'id' => 'folha-cli',
++                    'name' => 'Folha Digital',
++                    'clientId' => 'folha-cli',
++                    'cnpj' => $cnpjStub,
++                );
++            }
++
++            $retorno['dados'] = array(
++                'cnpjs' => $cnpjsStub,
++                'organizacoes' => array(),
++                'produtos' => $produtosStub,
++            );
++
++            return $retorno;
++        }
++
+         $token = $this->obterToken();
+         if (empty($token['success']) || empty($token['token'])) {
+             $retorno['motivo_interno'] = 'auth_token_indisponivel';

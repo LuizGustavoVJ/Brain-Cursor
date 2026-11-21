@@ -1,0 +1,8 @@
+node_modules/
+*.ps1
+*.mjs
+*.png
+package.json
+package-lock.json
+_mail-debug.png
+brain-cursor/

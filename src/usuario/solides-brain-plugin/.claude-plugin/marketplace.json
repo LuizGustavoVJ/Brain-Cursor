@@ -1,0 +1,14 @@
+{
+  "name": "solides",
+  "owner": {
+    "name": "Luiz Gustavo Finotello",
+    "email": "luiz.finotello@solides.com.br"
+  },
+  "plugins": [
+    {
+      "name": "solides-brain",
+      "source": "./solides-brain",
+      "description": "Frota de agentes + recall + autocorrecao de ancoras."
+    }
+  ]
+}
