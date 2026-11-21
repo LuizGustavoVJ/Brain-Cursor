@@ -1,0 +1,29 @@
+---
+description: Regra Brain — documentos de card
+alwaysApply: false
+globs:
+  - "docs/**"
+  - "**/evidencias/**"
+---
+
+# Documento de card — regras de montagem
+
+Carrega ao ler ou escrever em `docs/`. Fonte do fluxo: `.cursor/fluxo-completo.md`.
+
+- Artefato de card (fluxo, análise, plano, `plano.html`, `evidencias.html`, `evidenciashomol.html`)
+  vive em `docs/` do repo. Claude Docs é cópia para leitor de fora, nunca entregável nem o que
+  sustenta gate.
+- Documento oficial não cita agente nem especialista da frota: nada de nome de subagente,
+  "revisado pelo especialista-X", "o agente só monta a query" nem seção "Revisões de
+  especialistas". O registro do gatilho vai no `_processo-revisoes.md` interno da pasta do card.
+  Nome de coluna, tabela ou balde do banco não conta como menção (`frota/regras.md` § 11).
+- Print de resultado (banco, tela, terminal) leva o texto exato da query ou comando que o gerou
+  imediatamente acima, em qualquer HTML ou MD de evidência (regra do usuário, 23/09/2026).
+- HTML de E2E: print Playwright embutido e tabela "Detalhamento dos cenários". Stdout do
+  Playwright não entra em chat, `.md` nem HTML.
+- Figuras homol (U01–UN) e local (L01–LN) não se misturam; bloco homol não vai no `evidencias.html`.
+- `plano.html`: seção sem conteúdo fica marcada `N/A` + motivo, nunca apagada.
+- Validador que emite veredito de HTML declara `Regras conferidas: …` (padrão do HTML, documento
+  não cita agente, query acima do print). Recusa corrigida volta ao validador antes de seguir.
+- Layout do HTML: skill `evidencias-html-ado`. Nome dos arquivos: `{card-id}` =
+  `{número}-{Descricao-Kebab}`, idêntico em fluxo, análise, HTML e assets.
