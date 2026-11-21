@@ -25,7 +25,7 @@
 - [Infra local do cit](ambiente-cit-infra.md) — Docker Desktop (contexto desktop-linux), código não é bind mount, dois bancos no container 3309, config.php com skip-worktree, env nova não chega ao container, CLI força production
 - [Como montar query no banco do CRM](crm-schema-e-montagem-de-query.md) — conexão sem schema padrão (DATABASE()=NULL); sempre USE ou schema.TABELA; prod=aless608_sg, local/homol=aless608_sg_homol; INFORMATION_SCHEMA filtra por TABLE_SCHEMA literal
 - [Homol: sintaxe rápida do homol.sh](homol-updates-caminho-rapido.md) — SELECT/UPDATE em homol sem reinvestigar (conexões crm/db, SET/WHERE, sem delete/insert/ddl)
-- [.claude gitignored: sem recuperação](claude-settings-gitignored-sem-recuperacao.md) — backup datado obrigatório antes de sobrescrever
+- [.cursor gitignored: sem recuperação](cursor-settings-gitignored-sem-recuperacao.md) — backup datado obrigatório antes de sobrescrever
 - [local.sh do cit](local-sh-patches-cit.md) — status/apply/restore-repo, reverte só o patch
 - [Patches locais do cit fora do git](patches-locais-cit-fora-do-git.md) — ~/patches-locais-cit/, nunca commitar
 - [Segurança de credenciais do cit](seguranca-credenciais-cit.md) — levantamento em docs/credenciais-integracoes.md; segredos reais versionados (constants.php, payment-processing-service) exigem card próprio de rotação
@@ -50,7 +50,7 @@
 - [MCP HubSpot em sandbox](mcp-hubspot-sandbox-configurado.md) — portal 23737834, 7 das 21 tools escrevem
 - [Comando de projeto sombreia o embutido](comando-de-projeto-sombreia-embutido.md) — nunca nomear comando de projeto igual a embutido do CLI (caso /mcp)
 - [Skills que executam: só no contexto principal](skills-que-executam-so-no-principal.md) — code-review/security-review/simplify nunca em subagente
-- [PAT do ADO: consolidado no escopo de usuário](pat-do-ado-repetido-em-nove-repos.md) — vive só em ~/.claude.json
+- [PAT do ADO: consolidado no escopo de usuário](pat-do-ado-repetido-em-nove-repos.md) — vive só em ~/.cursor/mcp.json
 - [Google Workspace: conectores nativos ativos](google-workspace-conectores-nativos.md) — Gmail/Agenda/Drive; Drive não escreve célula
 - [Monitoramento: Datadog e Grafana instalados de propósito](monitoramento-datadog-grafana.md) — Grafana ligado, Datadog ainda não
 
@@ -60,7 +60,7 @@
 - [Estilo de resposta](estilo-de-resposta.md) — português claro de negócio sem código, resposta falável (voz local piper), gíria regional só na conversa, narração da execução
 - [Comprovar antes de perguntar](comprovar-antes-de-perguntar.md) — provar o que for verificável antes de levar ao usuário
 - [Fonte única: nunca duplicar tabela](fonte-unica-nunca-duplicar-tabela.md) — apontar, não copiar
-- [Padronização .claude entre repos](padronizacao-claude-cross-repo.md) — Brain byte-idêntico nos repos Solides
+- [Padronização .cursor entre repos](padronizacao-cursor-cross-repo.md) — Brain byte-idêntico nos repos Solides
 - [CRM é código nosso; pendência = só o inexecutável](crm-e-codigo-nosso-pendencia-so-o-inexecutavel.md)
 
 ## Integrações específicas (fora do domínio cancelamento/termo-aceite)

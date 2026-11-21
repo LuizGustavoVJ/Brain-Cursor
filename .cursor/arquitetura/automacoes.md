@@ -1,4 +1,4 @@
-# Automações do Claude Code — Solides
+# Automações do Cursor — Solides
 
 Referência das automações ativas e MCPs recomendados para o fluxo S1–I15.
 
@@ -51,7 +51,7 @@ A postagem de comentário/evidência passa por **pergunta a cada vez** ("posto e
 | `Bash(ADO_PROJECT=* python3 .cursor/scripts/ado_update_comment.py:*)` | Mesma regra, na forma com o prefixo de env que o comando canônico usa |
 | `Bash(python3 /var/www/html/{projeto}/.cursor/scripts/ado_update_comment.py:*)` | Mesma regra, com caminho absoluto — **o `{projeto}` é o do repositório atual** |
 | `mcp__azure-devops__wit_work_item_comment_write` | Comentário pela tool MCP — mesma pergunta antes |
-| Escrita no HubSpot: `mcp__hubspot__hubspot-{batch-create-*,batch-update-objects,create-*,update-*}` (7) e `mcp__legacy_claude_ai_HubSpot__{manage_*,import-claude-design-from-url}` (14) | Escrita em serviço externo pede OK (decisão do usuário, 25/09/2026). A leitura continua livre |
+| Escrita no HubSpot: `mcp__hubspot__hubspot-{batch-create-*,batch-update-objects,create-*,update-*}` (7) e `mcp__legacy_hubspot__{manage_*,import-design-from-url}` (14) | Escrita em serviço externo pede OK (decisão do usuário, 25/09/2026). A leitura continua livre |
 | Escrita no Grafana: `mcp__grafana-cloud__{create_*,update_*,delete_*,alerting_manage_*,agento11y_manage_*,add_activity_to_incident,install_plugin,grafana_api_request}` (27) | Mesma regra. As `*_manage_*` também listam, então uma leitura por elas também pede confirmação: custo aceito |
 | Postman: **sem** `ask` | A collection no workspace do Luiz faz parte de todo card (etapa PC). A trava é o texto "só no workspace do Luiz" |
 
@@ -114,7 +114,7 @@ O conteúdo injetado é a fonte da verdade do processo: os documentos em `.curso
 
 > Onde esses dois hooks **não** estão configurados, os passos são **manuais**: sincronizar após editar (script/`docker cp`) e reverter os patches locais antes de commit/PR — ver o perfil do projeto.
 
-> **Manutenção do hook:** o comando é uma **única linha JSON** com todas as aspas internas escapadas (`\"`). Uma aspa crua invalida o arquivo e o Claude Code **descarta todo o settings.json em silêncio** — permissões e hook param de valer. Depois de editar, validar com:
+> **Manutenção do hook:** o comando é uma **única linha JSON** com todas as aspas internas escapadas (`\"`). Uma aspa crua invalida o arquivo e o Cursor **descarta todo o settings.json em silêncio** — permissões e hook param de valer. Depois de editar, validar com:
 >
 > ```bash
 > python3 -c "import json; json.load(open('.cursor/settings.json')); print('ok')"
@@ -134,10 +134,10 @@ O conteúdo injetado é a fonte da verdade do processo: os documentos em `.curso
 
 ## MCPs
 
-> **Como funciona:** Como o Claude Code é usado como extensão do VSCode (sem CLI), os MCPs são configurados via arquivo `.mcp.json` na raiz do projeto. O Claude Code carrega este arquivo automaticamente ao abrir o workspace. **Não use `claude mcp add`** — esse comando exige o CLI instalado.
+> **Como funciona:** Como o Cursor é usado como extensão do VSCode (sem CLI), os MCPs são configurados via arquivo `.mcp.json` na raiz do projeto. O Cursor carrega este arquivo automaticamente ao abrir o workspace. **Não use `cursor mcp add`** — esse comando exige o CLI instalado.
 
 **Dois escopos, e o inventário não é copiado aqui.** Além do `.mcp.json` do projeto (gitignored,
-vale só neste repo), o Claude Code lê `mcpServers` de `~/.claude.json` — **escopo de usuário**, vale
+vale só neste repo), o Cursor lê `mcpServers` de `~/.cursor/mcp.json` — **escopo de usuário**, vale
 em todos os repos. Servidor declarado nos dois escopos: o de projeto vence e o outro fica morto.
 
 ```bash
@@ -204,7 +204,7 @@ hoje; o servidor só acrescentaria schema de tool ao contexto sem entregar nada 
 
 ---
 
-### 3. MCP GitLab — escopo de **usuário** (`~/.claude.json`), não do projeto
+### 3. MCP GitLab — escopo de **usuário** (`~/.cursor/mcp.json`), não do projeto
 
 **O que resolve:** pipeline e MR **reais** — qual job falhou e com que mensagem, o diff que o
 revisor humano vê, o que já está em qual branch. Roda com `GITLAB_READ_ONLY_MODE=true`: o agente
@@ -218,7 +218,7 @@ chamar. Para uma pergunta só sobre branch, `git ls-remote`/`git fetch` custam m
 
 Estava declarado no escopo de usuário e nunca foi configurado (toda tool respondia
 `Zendesk not configured`). **Decisão do usuário: não vai subir e não será usado.** A declaração foi
-removida de `~/.claude.json` e as 19 entradas de `allow`/`deny` saíram do `settings.json`.
+removida de `~/.cursor/mcp.json` e as 19 entradas de `allow`/`deny` saíram do `settings.json`.
 
 Consequência a assumir, não a esquecer: **ticket de cliente entra no card por copiar e colar**. O
 número do ticket continua no `{card-id}` das evidências — isso é do padrão de nomenclatura, não do MCP.
@@ -300,7 +300,7 @@ Os scripts de **conhecimento e frota** (`kb.sh`, `ancoras.py`, `frota.sh`, `brai
 
 ## Revisão de custos — sexta-feira 12:00
 
-Job recorrente registrado na sessão do Claude Code (`CronCreate`) que executa:
+Job recorrente registrado na sessão do Cursor (`CronCreate`) que executa:
 
 ```bash
 python3 .cursor/scripts/relatorio_custos.py --dias 30
@@ -310,14 +310,14 @@ e apresenta o resultado no chat, comparado aos alvos de
 [otimizacao-custos.md](../otimizacao-custos.md) § *Gargalos medidos e alvos*.
 
 > **Limitação:** jobs de `CronCreate` vivem **apenas na sessão em que foram criados** — não são
-> persistidos em disco, somem quando a sessão do Claude Code é encerrada, e jobs recorrentes
+> persistidos em disco, somem quando a sessão do Cursor é encerrada, e jobs recorrentes
 > expiram após **7 dias**. Serve para a sessão corrente; não serve como agenda permanente.
 
 ### Agenda permanente — `relatorio_semanal.sh` + cron do SO
 
 [`relatorio_semanal.sh`](../scripts/relatorio_semanal.sh) roda o relatório, grava em
 `.cursor/cache/relatorios/custos-AAAA-MM-DD.md` (mantendo os 12 mais recentes) e imprime o
-resumo. É o que deve ser agendado fora do Claude Code.
+resumo. É o que deve ser agendado fora do Cursor.
 
 **Opção A — crontab do usuário** (mais simples):
 
@@ -330,12 +330,12 @@ crontab -e
 **Opção B — systemd user timer** (sobrevive a reboot, tem histórico de execução):
 
 ```ini
-# ~/.config/systemd/user/custos-claude.service
+# ~/.config/systemd/user/custos-cursor.service
 [Service]
 Type=oneshot
 ExecStart=/var/www/html/cit/.cursor/scripts/relatorio_semanal.sh
 
-# ~/.config/systemd/user/custos-claude.timer
+# ~/.config/systemd/user/custos-cursor.timer
 [Timer]
 OnCalendar=Fri *-*-* 12:00:00
 Persistent=true
@@ -344,9 +344,9 @@ WantedBy=timers.target
 ```
 
 ```bash
-systemctl --user enable --now custos-claude.timer
+systemctl --user enable --now custos-cursor.timer
 loginctl enable-linger "$USER"   # roda sem sessão gráfica aberta
-systemctl --user list-timers custos-claude.timer
+systemctl --user list-timers custos-cursor.timer
 ```
 
 `Persistent=true` recupera a execução se a máquina estiver desligada no horário — o `crontab`
@@ -366,4 +366,4 @@ Rodar sob demanda continua valendo: `.cursor/scripts/relatorio_semanal.sh 7`.
 - Ao alterar `settings.json` (permissões ou hooks): atualizar as tabelas de § *O que já está ativo* e **validar o JSON** (`python3 -c "import json; json.load(open('.cursor/settings.json'))"`).
 - Ao alterar o texto do hook `UserPromptSubmit`: refletir a mudança em [fluxo-completo.md](../fluxo-completo.md), AGENTS.md, na skill `skills/regras-de-trabalho/` e nos guias de `sustentacao/` e `implementacao/` — os documentos devem espelhar o hook. **Medir o tamanho** depois de editar: alvo < 800 tokens.
 - Ao mudar preços de modelo: atualizar `PRECOS` em [`relatorio_custos.py`](../scripts/relatorio_custos.py).
-- MCPs ficam em `.mcp.json` na raiz do projeto (gitignored) — padrão do Claude Code via VSCode; documentar para onboarding de novo dev.
+- MCPs ficam em `.mcp.json` na raiz do projeto (gitignored) — padrão do Cursor via VSCode; documentar para onboarding de novo dev.

@@ -1,6 +1,6 @@
 # Arquitetura do Brain
 
-> "Brain" não é uma feature do Claude Code — é um padrão de montagem sobre seis peças reais.
+> "Brain" não é uma feature do Cursor — é um padrão de montagem sobre seis peças reais.
 > Este documento descreve como elas se encaixam neste repositório e, principalmente, **por quê**.
 
 ## O problema que o Brain resolve

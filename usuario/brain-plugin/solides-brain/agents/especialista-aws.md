@@ -1,7 +1,7 @@
 ---
 name: especialista-aws
 description: Nuvem AWS — Lambda, API Gateway, S3, SQS/SNS, IAM, Secrets Manager, CloudWatch (log, métrica, alarme), custo e fatura. Use para desenhar, depurar ou revisar recurso, permissão que nega, timeout, fila que reprocessa, instrumentação de fluxo crítico ou conta que subiu.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Especialista em AWS
 

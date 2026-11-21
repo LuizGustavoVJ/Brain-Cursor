@@ -15,7 +15,7 @@
 | 3. Plugins sincronizados (9) | `~/.cursor/plugins/synced/<bucket>/` | **não** enquanto `available` | não |
 
 Tudo isso é **escopo de usuário**: vale em todos os repositórios sem `propagar.sh`. O Brain
-(`.cursor/`) propaga; isto não — se sumir, o caminho é a conta em claude.ai, não o repositório.
+(`.cursor/`) propaga; isto não — se sumir, o caminho é a conta em cursor.com, não o repositório.
 
 O nome do bucket é um UUID que **muda a cada re-sync**. Nunca cravar esse caminho em agente, skill
 ou script — resolver sempre por nome:
@@ -42,7 +42,7 @@ ferramenta lê o `SKILL.md` pelo caminho do script acima — o conteúdo é o me
 | `docx` | `pesquisador-web`, `redator-tecnico` | documento recebido de área de negócio (.docx) ou entregável que o destinatário pediu em Word | documento do fluxo, que é `.md`/`.html` em `docs/` |
 | `xlsx` | `especialista-sql`, `pesquisador-web` | planilha é a **entrada** (catálogo, massa, cronograma) ou a **saída** pedida pelo usuário | o gatilho `metrica`: a definição do número é conferida antes de virar planilha |
 | `pptx` | `redator-tecnico` | apresentação de status pedida por nome (.pptx) | evidência de card — evidência é HTML no padrão canônico |
-| `docs` (Claude Docs) | contexto principal, `redator-tecnico` | documento vivo para **humano de fora do fluxo** ler e comentar | **nada do fluxo** — ver a regra de fronteira |
+| `docs` (docs publicados) | contexto principal, `redator-tecnico` | documento vivo para **humano de fora do fluxo** ler e comentar | **nada do fluxo** — ver a regra de fronteira |
 | `morning` | contexto principal, a pedido explícito | o usuário pede o brief do dia por nome | acompanhamento de card |
 | `import-memory` | ninguém, por ora | só se o usuário quiser trazer memórias de ChatGPT/Gemini | a memória do projeto, escrita pelo `destilador-dominio` |
 
@@ -90,7 +90,7 @@ Por isso a ferramenta só entra em agente que tem motivo nomeado aqui.
 | `dataviz` | `especialista-sql` (invoca — tem `Skill`; `escritor-evidencias` só embute a imagem já gerada, não invoca) | gráfico em análise ou relatório de dados | evidência de card, que segue o layout canônico — gráfico é insumo, não print |
 | `run` | `ambiente-local` | L0 quando o repo não tem receita própria | a skill `ambientes-e-testes`, que continua sendo a fonte |
 | `workflow-authoring` | contexto principal | varredura em escala (auditar todas as rotas, achar todos os pontos de um fluxo), **só com pedido explícito do usuário** | etapa nem gate — e a própria skill diz que não autoriza executar |
-| `claude-api` | `engenheiro-de-brain` (custo de token, cache, janela) | só se formos codar contra a API da Anthropic, ou para medir custo do Brain | nada hoje: nenhum código nosso chama essa API. Subcomandos dela editam código e **gastam crédito real** |
+| `cursor-billing` | `engenheiro-de-brain` (custo de token, cache, janela) | só se formos codar contra a API da provedor de modelos, ou para medir custo do Brain | nada hoje: nenhum código nosso chama essa API. Subcomandos dela editam código e **gastam crédito real** |
 | `loop`, `schedule` | ninguém por ora | acompanhar pipeline longo, se o usuário pedir | **nada é agendado sem pedido explícito** |
 | `fewer-permission-prompts`, `keybindings-help` | `engenheiro-de-brain`, a pedido | conforto da IDE | — |
 | `artifact-design`, `artifact-diagramming`, `artifact-capabilities` | ninguém | — | não publicamos Artifact: entregável de card é HTML em `docs/` |
@@ -101,7 +101,7 @@ Por isso a ferramenta só entra em agente que tem motivo nomeado aqui.
 ## Origem 3 — plugins sincronizados (9)
 
 Todos com `installationPreference: available`: **baixados pela conta, não instalados pelo CLI**
-(`claude plugin list` → "No plugins installed"). Nenhuma skill deles aparece no catálogo e nenhuma é
+(`cursor plugin list` → "No plugins installed"). Nenhuma skill deles aparece no catálogo e nenhuma é
 invocável. Servem como **texto de referência**, lido sob demanda — custo zero de contexto permanente:
 
 ```bash
@@ -171,7 +171,7 @@ Desenho concreto, não é proposta em aberto:
 - Board de erros é **ferramenta de acompanhamento interno**: ajuda a diagnosticar rápido enquanto
   a suíte roda, não é o que prova que I10/I13 passou — quem prova é o `resumo_testes.sh` (código
   de saída + tabela) mais o print Playwright que o `escritor-evidencias` embute depois.
-- HTML gerado por `build-dashboard` é **arquivo local**, nunca Artifact publicado nem Claude Docs
+- HTML gerado por `build-dashboard` é **arquivo local**, nunca Artifact publicado nem docs publicados
   — a regra de fronteira da seção abaixo vale igual para o board.
 
 **Duas condições de uso.** Se o `ler-plugin` falhar — re-sync mudou o bucket, plugin saiu da conta —
@@ -191,17 +191,17 @@ Instalados de propósito pelo usuário: o alvo é **monitoramento novo**, não i
 (nenhum repositório tem `dd-trace`, Datadog ou Grafana hoje). **Autenticam de formas diferentes** —
 não trate os dois como o mesmo problema:
 
-- **Grafana — OAuth. LIGADO em 18/09/2026** (`claude mcp get grafana-cloud` → `Status: ✔ Connected`,
+- **Grafana — OAuth. LIGADO em 18/09/2026** (`cursor mcp get grafana-cloud` → `Status: ✔ Connected`,
   escopo de usuário, stack `https://tallcrab2315.grafana.net`). O botão *Vincular* da aba Conectores
   do plugin fica cinza porque o conector não existe na conta; o caminho que funciona não passa por
-  ele: `claude mcp add --transport http grafana-cloud https://mcp.grafana.com/mcp --scope user` e
-  depois **`claude mcp login grafana-cloud`** no terminal (o CLI faz Dynamic Client Registration
+  ele: `cursor mcp add --transport http grafana-cloud https://mcp.grafana.com/mcp --scope user` e
+  depois **`cursor mcp oauth grafana-cloud`** no terminal (o CLI faz Dynamic Client Registration
   sozinho, sem client id/secret). O `login` vale mais que o menu: não depende de sessão interativa
-  nem de comando de projeto sombreando o `/mcp` embutido. Desfaz com `claude mcp remove
+  nem de comando de projeto sombreando o `/mcp` embutido. Desfaz com `cursor mcp remove
   grafana-cloud --scope user`. Exige stack Grafana Cloud existente, termos do Grafana Assistant
   aceitos por um admin e papel Editor ou superior. **As tools só chegam à sessão aberta DEPOIS de
   reiniciar** — conectar não injeta tool em sessão viva.
-- **Datadog — chave de API, não OAuth.** `.dd_claude-code_mcp.json` manda `DD_API_KEY`,
+- **Datadog — chave de API, não OAuth.** `.dd_cursor-mcp.json` manda `DD_API_KEY`,
   `DD_APPLICATION_KEY` e `X-Datadog-MCP-Toolsets` como header, com o domínio em `DD_MCP_DOMAIN`.
   Sem as duas chaves a URL vira `not-setup` e o servidor fica mudo. **Ainda não ligado.**
 
@@ -246,16 +246,16 @@ Grafana foi adicionado direto como `grafana-cloud`, logo **`mcp__grafana-cloud__
 
 **Grafana já está ligado; o Datadog não.** Nenhum agente declara tool de servidor desligado — deny
 contra tool que não existe não protege ninguém. Para o Grafana, declarar **só as de leitura**,
-conferidas contra a lista viva do servidor (`claude mcp get grafana-cloud` em sessão reiniciada). Gatilho: o `telemetria` já casa `datadog|grafana|prometheus`,
+conferidas contra a lista viva do servidor (`cursor mcp get grafana-cloud` em sessão reiniciada). Gatilho: o `telemetria` já casa `datadog|grafana|prometheus`,
 não há gatilho novo a criar.
 
 **Nada disso fecha etapa.** Monitoramento é insumo de diagnóstico; quem sustenta gate continua sendo
 teste + `validador-tecnico`.
 
-### Diagramação — conector `Figma` (conta, escopo claude.ai)
+### Diagramação — conector `Figma` (conta, escopo cursor.com)
 
 Ligado por decisão do usuário em 25/09/2026: "comece a usar o Figma... para desenho de fluxos e
-regras de negócio". É **conector de conta**, não skill do Brain — tools `mcp__legacy_claude_ai_Figma__*`;
+regras de negócio". É **conector de conta**, não skill do Brain — tools `mcp__legacy_figma__*`;
 não propaga por arquivo (só o TEXTO que o referencia, aqui e no fluxo, propaga).
 `whoami` confirmado: Luiz Gustavo Finotello, plano **Starter**, assento View, role admin.
 
@@ -267,7 +267,7 @@ lida linha a linha. Regra de uso: nunca em loop, **nunca ler de volta** um board
 agente acabou de desenhar — cada leitura consome cota do mês inteiro.
 
 **Quem chama a tool — só o contexto principal.** Nenhum agente da frota declara
-`mcp__legacy_claude_ai_Figma__*` no frontmatter. Não foi possível testar se um subagente (`Task`)
+`mcp__legacy_figma__*` no frontmatter. Não foi possível testar se um subagente (`Task`)
 alcançaria a tool — este ambiente não tinha ferramenta de spawn disponível para o teste — por isso
 foi adotado direto o caminho seguro já conhecido ("tool não declarada não chega ao subagente",
 `mcp-inventario-escopos-e-alcance`): o subagente (`mapeador-fluxo`, `levantador-requisitos`,
@@ -355,7 +355,7 @@ sobre o schema concreto do card, por isso vai para "Lacunas".
 | `docx` | skill da conta | `pesquisador-web`, `redator-tecnico` | documento recebido de negócio, ou entregável pedido em Word | documento do fluxo, que é `.md`/`.html` em `docs/` |
 | `xlsx` | skill da conta | `especialista-sql`, `pesquisador-web` | planilha como entrada (massa, catálogo) ou saída pedida | o gatilho `metrica` — a definição do número é conferida antes |
 | `documentacao-api-swagger` | skill Brain (propaga) | `redator-tecnico` | publicar/documentar endpoint (OpenAPI, AsyncAPI, ADR) | — |
-| `docs` (Claude Docs) | skill da conta | contexto principal, a pedido | documento vivo para leitor de fora do fluxo | **nada do fluxo de card** — ver "Regra de fronteira" abaixo |
+| `docs` (docs publicados) | skill da conta | contexto principal, a pedido | documento vivo para leitor de fora do fluxo | **nada do fluxo de card** — ver "Regra de fronteira" abaixo |
 | `Figma` (`generate_diagram`) | conector de conta | contexto principal (subagente só escreve o Mermaid) | S1/pré-I1/S3/I1 — fluxo, árvore de decisão, integração, schema — ver "Diagramação — conector `Figma`" acima | o Mermaid no `.md`, que é o entregável e sustenta gate — o board é só visualização |
 
 ### 5. Apresentação
@@ -382,7 +382,7 @@ sobre o schema concreto do card, por isso vai para "Lacunas".
 | `small-business/build-agent` | plugin | `engenheiro-de-brain` | extrair a especificação da conversa em vez de reinterrogar | texto de referência só — não substitui a interview do `skill-creator` |
 | `small-business/build-connector` | plugin | `engenheiro-de-brain` | mapear conector → quem consome → fallback quando cai | — |
 | `update-config` | CLI embutida | `engenheiro-de-brain` | hook, `permissions`, `env`, `settings.json`, MCP | o rito de ler antes de escrever e provar que o hook disparou — depois, `propagar.sh` |
-| `claude-api` | CLI embutida | `engenheiro-de-brain` | medir custo de token, cache, janela de contexto — gatilho `contexto` não tem detecção mecânica, é `decl` (`gatilhos.tsv`) | código de produto que chama LLM — não existe hoje em nenhum repo (especialista aposentado na Fase 3) |
+| `cursor-billing` | CLI embutida | `engenheiro-de-brain` | medir custo de token, cache, janela de contexto — gatilho `contexto` não tem detecção mecânica, é `decl` (`gatilhos.tsv`) | código de produto que chama LLM — não existe hoje em nenhum repo (especialista aposentado na Fase 3) |
 
 ### 8. Infra / Docker / ambiente local
 
@@ -467,14 +467,14 @@ acionado nesta tarefa por isso.
 
 ---
 
-## Regra de fronteira — Claude Docs não entra no fluxo de card
+## Regra de fronteira — docs publicados não entra no fluxo de card
 
 **Todo artefato do fluxo vive em `docs/` do repositório**, versionado, com o `{card-id}` no nome:
 fluxo, análise, requisitos, plano, `plano.html`, `evidencias.html`, `evidenciashomol.html`,
 migrations e documentos de implementação. Isso não é preferência de formato — é o que o
 `validador-tecnico` lê, o que sustenta o I4 e o I12, e o que sobra quando a sessão morre.
 
-Um documento do Claude Docs **não é rastreável pelo repositório, não passa por gate e não some com o
+Um documento do docs publicados **não é rastreável pelo repositório, não passa por gate e não some com o
 card**. Por isso:
 
 - **Proibido** usar `docs` para plano, análise, fluxo, evidência ou qualquer entregável de card —

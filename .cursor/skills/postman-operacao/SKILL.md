@@ -28,7 +28,7 @@ description: >-
 
 ## Chave / autenticação
 
-- A PMAK vive em `~/.claude.json` → `mcpServers.postman.env.POSTMAN_API_KEY` (64 chars, prefixo
+- A PMAK vive em `~/.cursor/mcp.json` → `mcpServers.postman.env.POSTMAN_API_KEY` (64 chars, prefixo
   `PMAK-`). O MCP já usa essa chave sozinho — não peça nem cole a chave em prompt.
 - Em **script** de fallback (API REST), ler a chave desse arquivo e **nunca imprimir** seu
   valor (nem em stdout, nem em log). Header da API: `X-Api-Key: <PMAK>`.

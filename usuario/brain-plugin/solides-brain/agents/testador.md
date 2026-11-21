@@ -1,7 +1,7 @@
 ---
 name: testador
 description: Etapas I7/I8 (E2E), I10 (local) e I13 (homol) — define a matriz de cenários, escreve os specs, roda a suíte pelo script de resumo, grava os prints e devolve só placar e falhas. Use para qualquer teste. Nunca despeja stdout do Playwright.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Testador — etapas I7, I8, I10, I13
 

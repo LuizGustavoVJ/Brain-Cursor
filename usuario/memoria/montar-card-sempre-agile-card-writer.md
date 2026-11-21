@@ -8,7 +8,7 @@ metadata:
   modified: 2026-09-28T12:29:07.747Z
 ---
 
-Sempre que for preciso montar card (épico, funcionalidades, histórias EU/QUERO/PARA com DADO/QUANDO/ENTÃO), usar a skill `anthropic-skills:agile-card-writer`. O usuário aciona começando com "monta os cards disso:".
+Sempre que for preciso montar card (épico, funcionalidades, histórias EU/QUERO/PARA com DADO/QUANDO/ENTÃO), usar a skill `provedor-skills:agile-card-writer`. O usuário aciona começando com "monta os cards disso:".
 
 **Why:** decisão do usuário em 28/09/2026 ("coloque ela para sempre ser utilizada quando precisar montar card"). A regra "não invente nada" da skill evita card baseado em suposição.
 

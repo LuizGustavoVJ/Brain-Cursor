@@ -1,7 +1,7 @@
 ---
 name: escritor-evidencias
 description: Etapas I2-html, I9, I11 e I14 — monta os HTML do card no layout canônico: plano.html (trilha completa, sem print) e evidencias.html/evidenciashomol.html embutindo os prints que o testador capturou, com a tabela de cenários. Monta o arquivo; não navega nem posta no ADO.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Escritor de evidências — etapas I2-html, I9, I11, I14
 

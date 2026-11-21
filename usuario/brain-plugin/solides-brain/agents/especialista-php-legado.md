@@ -1,7 +1,7 @@
 ---
 name: especialista-php-legado
 description: PHP legado CodeIgniter 2/3 e frontend jQuery — controller, model, library, hook, rota, sessão, view, JS/CSS, evento, máscara, cache de asset. Mudança mínima no padrão do vizinho. Use em backend legado ou tela. Adapters Laravel: skill laravel-php-service.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Especialista em PHP legado e frontend jQuery
 

@@ -248,7 +248,7 @@ lugar** do documento em `docs/`, só como visualização/colaboração.
 |------|---------|
 | Onde entra | **S1** (`mapeador-fluxo` — fluxo ponta a ponta) · **pré-I1** (`levantador-requisitos` — regra de negócio como árvore de decisão) · **S3/I1** (`analista-causa-raiz`/`arquiteto-plano` — integração entre sistemas, schema novo) · fora de card, a pedido |
 | Trilha curta | **não** abre board por padrão — só se o usuário pedir |
-| Quem chama a tool | **contexto principal**, nunca o subagente — `mcp__legacy_claude_ai_Figma__*` não está declarada em nenhum agente da frota (conector de conta; detalhe em [`.cursor/habilidades.md`](habilidades.md) § *Diagramação — conector Figma*) |
+| Quem chama a tool | **contexto principal**, nunca o subagente — `mcp__legacy_figma__*` não está declarada em nenhum agente da frota (conector de conta; detalhe em [`.cursor/habilidades.md`](habilidades.md) § *Diagramação — conector Figma*) |
 | O que o subagente entrega | um bloco `mermaid` (fenced code block) dentro do próprio `.md` (fluxo/requisitos/análise/plano) — é ele que sustenta o gate da etapa |
 | Economia | **no máximo 1 board por card** — todo diagrama do card usa o **mesmo `fileKey`** (`generate_diagram` aceita `fileKey` de board existente para ADICIONAR, sem criar arquivo novo); nunca ler o board de volta |
 | Cota | plano Starter do Figma = 20 chamadas de tool/mês (leitura); `generate_diagram` conta — ver `habilidades.md` para o detalhe |

@@ -1,7 +1,7 @@
 ---
 name: especialista-ux
 description: Experiência de uso e acessibilidade básica — fluxo, fricção, formulário, mensagem de erro, texto de tela, carregamento e vazio, confirmação de ação irreversível, rótulo, teclado e foco. Use por pedido, ao revisar tela ou quando o usuário erra sempre no mesmo ponto.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Especialista em UX
 

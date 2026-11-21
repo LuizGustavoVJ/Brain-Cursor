@@ -1,4 +1,4 @@
-# Política de economia de custos — Claude Code
+# Política de economia de custos — Cursor
 
 Aplicável a **todo card**, em qualquer fluxo (S1–S6 ou I1–I15). Não altera nenhum gate: os
 critérios de aprovação continuam os mesmos — muda **quem valida**, **quantas vezes** e **quanto
@@ -172,7 +172,7 @@ Como depender de memória não funcionou, a checagem é automática:
 
 | Peça | Papel |
 |------|-------|
-| [`scripts/fase.sh`](scripts/fase.sh) | O agente **declara** etapa e card ao entrar na etapa: `.cursor/scripts/fase.sh I7 167697`. Estado **por sessão** (`CLAUDE_CODE_SESSION_ID`); card diferente do ativo imprime o alerta de aba única. |
+| [`scripts/fase.sh`](scripts/fase.sh) | O agente **declara** etapa e card ao entrar na etapa: `.cursor/scripts/fase.sh I7 167697`. Estado **por sessão** (`CURSOR_AGENT_SESSION_ID`); card diferente do ativo imprime o alerta de aba única. |
 | [`scripts/hook_contexto.py`](scripts/hook_contexto.py) | Hook em `UserPromptSubmit` + `PostToolUse`. Lê o transcript da sessão, calcula o contexto **real** e compara com o orçamento da fase declarada. |
 
 Três níveis, com ação diferente em cada um:

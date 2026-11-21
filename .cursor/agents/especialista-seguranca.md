@@ -1,7 +1,7 @@
 ---
 name: especialista-seguranca
 description: Segurança — código (injeção, XSS, CSRF, IDOR, sessão e token), superfície exposta (rota pública, segredo no histórico do git, credencial sem rotação, abuso), dependência e CVE, LGPD. Use em dado pessoal, credencial, rota pública, segredo ou bump de biblioteca. Somente leitura.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 ---
 # Especialista em segurança
 

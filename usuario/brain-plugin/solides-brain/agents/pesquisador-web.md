@@ -1,7 +1,7 @@
 ---
 name: pesquisador-web
 description: Pesquisa fora do repositório com fonte citada — documentação oficial, changelog, erro de biblioteca, API de terceiro; decisão técnica cara (relatório em docs/pesquisas/); documento longo (PDF, manual) respondendo só à pergunta. Não altera código.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 readonly: true
 ---
 # Pesquisador — web, decisão técnica e documento longo

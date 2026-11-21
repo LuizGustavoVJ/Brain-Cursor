@@ -1,7 +1,7 @@
 ---
 name: desenvolvedor
 description: Etapa I5 — implementa exatamente o plano aprovado, arquivo por arquivo, e registra a implementação executada. Use somente após o gate I4 (OK explícito do usuário). Não decide escopo nem improvisa além do plano.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 ---
 # Desenvolvedor — etapa I5
 

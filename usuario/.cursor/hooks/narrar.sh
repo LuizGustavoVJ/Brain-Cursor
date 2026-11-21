@@ -4,7 +4,7 @@
 Objetivo: conversa em vez de silencio ate a resposta final. Regras que evitam
 o efeito tagarela:
   - nao enfileira: se ja tem voz tocando, este passo passa calado;
-  - intervalo minimo entre narracoes (CLAUDE_NARRA_INTERVALO, padrao 7 s);
+  - intervalo minimo entre narracoes (cursor_NARRA_INTERVALO, padrao 7 s);
   - nao repete a frase anterior;
   - subagente nao narra (senao varias etapas falam ao mesmo tempo).
 
@@ -30,12 +30,12 @@ DESLIGADO_NARRA = os.path.join(HOME, ".cursor/voz-narracao-off")
 PIDFILE = os.path.join(HOME, ".cursor/voz.pid")
 ESTADO = os.path.join(HOME, ".cursor/voz-narracao.state")
 
-INTERVALO = float(os.environ.get("CLAUDE_NARRA_INTERVALO", "7"))
+INTERVALO = float(os.environ.get("cursor_NARRA_INTERVALO", "7"))
 MAX_CHARS = 110
 # Um pouco mais rapida e mais baixa que a resposta final: e comentario, nao conclusao.
-LENGTH_SCALE = os.environ.get("CLAUDE_NARRA_LENGTH", "0.82")
-GANHO_NARRA = os.environ.get("CLAUDE_NARRA_GANHO", "1.6")
-TOM = os.environ.get("CLAUDE_VOZ_TOM", "22400")
+LENGTH_SCALE = os.environ.get("cursor_NARRA_LENGTH", "0.82")
+GANHO_NARRA = os.environ.get("cursor_NARRA_GANHO", "1.6")
+TOM = os.environ.get("cursor_VOZ_TOM", "22400")
 
 # Só interjeição: "vou"/"deixa eu" quebravam a concordância com descrição no
 # gerúndio ("vou conferindo os arquivos").
@@ -136,7 +136,7 @@ def main():
     cano = (
         '"%s" --model "%s" --length_scale %s --noise_w 0.88 --noise_scale 0.70'
         " --sentence_silence 0.12 --output_raw 2>/dev/null"
-        ' | CLAUDE_VOZ_GANHO=%s python3 "%s" 2>/dev/null'
+        ' | cursor_VOZ_GANHO=%s python3 "%s" 2>/dev/null'
         " | aplay -q -r %s -f S16_LE -t raw - >/dev/null 2>&1"
     ) % (PIPER, MODELO, LENGTH_SCALE, GANHO_NARRA, GANHO, TOM)
     fala = subprocess.Popen(

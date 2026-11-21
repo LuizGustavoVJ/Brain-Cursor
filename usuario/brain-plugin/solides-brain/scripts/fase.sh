@@ -8,7 +8,7 @@
 #   .cursor/scripts/fase.sh             # mostra card, etapa e orçamento da sessão
 #   .cursor/scripts/fase.sh --limpar
 #
-# Estado por SESSÃO (CLAUDE_CODE_SESSION_ID), nunca por repo: duas abas não se contaminam.
+# Estado por SESSÃO (CURSOR_AGENT_SESSION_ID), nunca por repo: duas abas não se contaminam.
 # Card diferente do ativo na sessão → imprime o alerta de aba única por card (regra obrigatória).
 # Etapa de encerramento (S6A-VAL, S6A-PC, S6B, I11, I13-PC, I14, I15) sem docs/destilacoes/<card>.md
 # → imprime a cobrança de destilação.

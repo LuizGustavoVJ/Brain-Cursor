@@ -1,6 +1,6 @@
 # Estrutura da pasta `.cursor/`
 
-Documentação de contexto do projeto para o Claude Code. Separada de **`docs/`** (entregáveis de sustentação por card): aqui fica **como** trabalhar, lá **o que** foi produzido.
+Documentação de contexto do projeto para o Cursor. Separada de **`docs/`** (entregáveis de sustentação por card): aqui fica **como** trabalhar, lá **o que** foi produzido.
 
 ## Árvore de diretórios
 
@@ -52,8 +52,8 @@ propósito. Artefato gerado dentro da pasta de configuração parece uma segunda
 Uma pasta por skill, com `SKILL.md` + arquivos de detalhe ao lado (divulgação progressiva).
 
 - **`rules/` voltou em 25/09/2026, em formato nativo:** `.cursor/rules/*.md` com frontmatter
-  `paths:` — o Claude Code carrega o arquivo só quando a sessão toca um caminho que casa. (A pasta
-  antiga, apagada em 21/08, era de `.mdc`, convenção do Cursor que o Claude Code nunca carregou.)
+  `paths:` — o Cursor carrega o arquivo só quando a sessão toca um caminho que casa. (A pasta
+  antiga, apagada em 21/08, era de `.mdc`, convenção do Cursor que o Cursor nunca carregou.)
   Regra que só importa ao tocar certo arquivo vai em `rules/`; regra transversal é skill ou linha
   no `AGENTS.md`.
 - `SKILL.md` enxuto, imperativo, com o detalhe em arquivo vizinho.

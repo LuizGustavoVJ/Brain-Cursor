@@ -27,10 +27,10 @@ Contrato de 21/08/2026 — a resposta chega **falada** pelo hook `Stop` (`~/.cur
 Piper, 100% local). Conclusão na primeira frase, frases curtas, **sem tabela, sem bloco de código,
 sem lista longa**. Caminho de arquivo/comando/SQL/número de card continuam em texto (são para
 copiar, não ouvir) mas anunciados numa frase antes ("o comando está no chat"). Limite de fala
-(`CLAUDE_VOZ_MAX_CHARS`, hoje 1600) corta o fim — o que ficar para o final não é ouvido. Entrega de
+(`cursor_VOZ_MAX_CHARS`, hoje 1600) corta o fim — o que ficar para o final não é ouvido. Entrega de
 card (HTML/plano/evidência) segue sempre em arquivo.
 
-**Pilha de voz:** ditado (`/voice`) é nativo e **manda áudio para a Anthropic**; a fala do Claude é
+**Pilha de voz:** ditado (`/voice`) é nativo e **manda áudio para a provedor de modelos**; a fala do cursor é
 100% local (piper `pt_BR-cadu-medium` + `~/.cursor/hooks/ganho_audio.py` para volume + `aplay`).
 Config em `~/.cursor/settings.json` (escopo de usuário, não propaga). Desligar: `touch
 ~/.cursor/voz-off` (religar: `rm`). Hook ignora subagente. Nunca ditar CPF/cartão/credencial; voz de

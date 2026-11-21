@@ -1,5 +1,5 @@
 ---
-name: padronizacao-claude-cross-repo
+name: padronizacao-cursor-cross-repo
 description: "Usuário quer .cursor/ e settings.json byte-idênticos em todos os repos Solides, mesmo perdendo config específica de projeto"
 metadata: 
   node_type: memory
@@ -12,7 +12,7 @@ Ao padronizar a pasta `.cursor/` entre os repositórios Solides, o usuário esco
 
 **Why:** o padrão único vale mais para ele do que a conveniência local de cada repo; divergência entre repos é tratada como defeito, não como customização.
 
-**How to apply:** o `cit` é a origem da propagação. Copiar verbatim, ajustando apenas caminhos absolutos que contenham o nome do projeto (ex.: a regra `deny` do `ado_update_comment.py`). Não padronizar `settings.local.json` (é pessoal e tem caminhos/MCPs próprios). **Skills de stack passaram a ser padronizadas em 21/08/2026** — ver a atualização abaixo. Antes de sobrescrever, ver [[claude-settings-gitignored-sem-recuperacao]].
+**How to apply:** o `cit` é a origem da propagação. Copiar verbatim, ajustando apenas caminhos absolutos que contenham o nome do projeto (ex.: a regra `deny` do `ado_update_comment.py`). Não padronizar `settings.local.json` (é pessoal e tem caminhos/MCPs próprios). **Skills de stack passaram a ser padronizadas em 21/08/2026** — ver a atualização abaixo. Antes de sobrescrever, ver [[cursor-settings-gitignored-sem-recuperacao]].
 
 **Atualização 21/08/2026 — deixou de ser manual.** Regra permanente do usuário: toda alteração em
 `.cursor/` ou `AGENTS.md` é replicada em **todos** os repos git da máquina, sem pedir permissão,

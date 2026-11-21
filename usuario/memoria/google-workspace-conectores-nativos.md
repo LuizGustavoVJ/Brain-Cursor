@@ -5,7 +5,7 @@ metadata:
   type: reference
 ---
 
-Em 18/09/2026 o Luiz vinculou em claude.ai os conectores nativos **Gmail**, **Google Agenda** e
+Em 18/09/2026 o Luiz vinculou em cursor.com os conectores nativos **Gmail**, **Google Agenda** e
 **Google Drive** (conta `luiz.finotello@solides.com.br`). Testados e funcionando nesta máquina.
 
 O que já dá para fazer:
@@ -18,7 +18,7 @@ O que NÃO dá: **escrever célula em planilha, editar Doc/Slide, criar Forms, T
 Para isso é preciso o servidor `workspace-mcp` (taylorwilsdon), que exige projeto no Google Cloud
 e credencial OAuth "Desktop application" — pendente com o Luiz.
 
-**Armadilha:** vincular o conector em claude.ai **não** injeta as ferramentas na sessão já aberta —
+**Armadilha:** vincular o conector em cursor.com **não** injeta as ferramentas na sessão já aberta —
 o catálogo é montado no start. Sempre reiniciar a sessão depois de vincular.
 
 Escrita em terceiro (enviar e-mail, criar evento, alterar arquivo) segue a regra de

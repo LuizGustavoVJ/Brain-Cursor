@@ -20,7 +20,7 @@ No segundo arquivo escreva **ponteiro**, nunca cópia. Artefato gerado (plugin) 
 `.cursor/`. Ver [[brain-frota-delegar-por-etapa]] e [[modelo-por-custo-de-errar]].
 
 **Complemento (21/08/2026) — mudou o Brain, revise quem o descreve.** O usuário cobrou:
-"terá que revisar os documentos criados dentro da pasta claude para refletir as alterações atuais",
+"terá que revisar os documentos criados dentro da pasta cursor para refletir as alterações atuais",
 citando `arquitetura/brain.md` § *A frota* ainda escrito "Treze agentes" depois de a frota ir a 62.
 Descrição desatualizada é o mesmo defeito da duplicação: quem lê obedece o que já não vale. Achados
 do mesmo tipo na varredura: `automacoes.md` com o orçamento revogado (30k/50k/75k) e sem o

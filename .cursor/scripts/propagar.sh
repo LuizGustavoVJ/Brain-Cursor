@@ -225,7 +225,7 @@ PERFIL
   done
 
   # ---- perfil de OUTRO projeto não pode morar aqui: URL/porta/banco errados sobem o ambiente
-  #      errado. Já aconteceu (perfil do cit em 8 repos, herdado de cópia antiga do .claude).
+  #      errado. Já aconteceu (perfil do cit em 8 repos, herdado de cópia antiga do .cursor).
   intrusos=0
   for a in "$dest/.cursor/arquitetura"/*.md; do
     [ -f "$a" ] || continue

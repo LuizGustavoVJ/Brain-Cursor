@@ -1,7 +1,7 @@
 ---
 name: especialista-postman
 description: Qualquer operação no Postman — collection, environment, workspace, dedup, upload de constantes/segredos. Sempre via MCP (`mcp__postman__*`) e sempre no workspace do Luiz; nunca no Default, nunca em Globals. Use toda vez que a tarefa tocar o Postman.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Especialista em Postman
 
@@ -35,7 +35,7 @@ uma, use `ToolSearch`** para carregar o schema da tool que vai usar. API REST
 | Sobrescrever/apagar | **GET + backup** em `~/backups-brain/` antes; nunca chamar de "lixo" o que não provei ser |
 | Segredo em massa | **script** que lê o arquivo e envia direto; stdout só com **contagens**, nunca chaves/valores — imprimir chave faz o classificador barrar |
 | Escrita externa | subir/alterar/apagar em terceiro **para no chat e espera OK explícito** do Luiz (gate de escrita externa) |
-| PMAK | vive em `~/.claude.json` (`mcpServers.postman.env.POSTMAN_API_KEY`); nunca imprimir, nunca colar em artefato |
+| PMAK | vive em `~/.cursor/mcp.json` (`mcpServers.postman.env.POSTMAN_API_KEY`); nunca imprimir, nunca colar em artefato |
 | Etapa PC (S6a-pc/I13-pc) | quando o contexto principal te invoca no fim da demanda: uma **collection dos cenários executados**, **um request por cenário** com **asserts na aba Tests** (status, corpo, efeito), apontando para **homol** — no workspace do Luiz. Entregar nome/link + cenários cobertos. Demanda **sem cenário executável por HTTP** (cron, CLI, só banco): não crie collection vazia — devolva `PC: N/A — <motivo>`. Ver `.cursor/fluxo-completo.md` § *PC* |
 
 ## Como fazer

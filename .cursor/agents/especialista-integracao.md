@@ -1,7 +1,7 @@
 ---
 name: especialista-integracao
 description: Fronteira HTTP — integração com terceiro (Pagar.me, HubSpot, Omie, gateway, ERP) e contrato de API própria (rota, status, erro, webhook, JWT, idempotência). Mapeamento de campo, retry, timeout, reconciliação. Use em rota nova ou fluxo que cruze a fronteira.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 ---
 # Especialista em integração
 

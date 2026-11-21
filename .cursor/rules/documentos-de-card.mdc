@@ -11,7 +11,7 @@ globs:
 Carrega ao ler ou escrever em `docs/`. Fonte do fluxo: `.cursor/fluxo-completo.md`.
 
 - Artefato de card (fluxo, análise, plano, `plano.html`, `evidencias.html`, `evidenciashomol.html`)
-  vive em `docs/` do repo. Claude Docs é cópia para leitor de fora, nunca entregável nem o que
+  vive em `docs/` do repo. docs publicados é cópia para leitor de fora, nunca entregável nem o que
   sustenta gate.
 - Documento oficial não cita agente nem especialista da frota: nada de nome de subagente,
   "revisado pelo especialista-X", "o agente só monta a query" nem seção "Revisões de

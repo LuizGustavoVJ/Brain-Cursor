@@ -5,8 +5,8 @@ metadata:
   type: reference
 ---
 
-Configurado em 27/08/2026 (`claude mcp add hubspot -s user … npx -y @hubspot/mcp-server`,
-versão 0.4.0). O registro vive em `~/.claude.json` → `mcpServers.hubspot`, com o token em
+Configurado em 27/08/2026 (`cursor mcp add hubspot -s user … npx -y @hubspot/mcp-server`,
+versão 0.4.0). O registro vive em `~/.cursor/mcp.json` → `mcpServers.hubspot`, com o token em
 `env.PRIVATE_APP_ACCESS_TOKEN`. **Não está no `.mcp.json` do repo** — que segue vazio e é
 versionado; segredo do HubSpot ali já causou incidente em outro serviço
 (ver [[segredo-versionado-payment-processing-service]]).
