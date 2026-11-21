@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-O CIT lê a `tabela_centralizadora_assinaturas` no projeto GCP `solides-ai-data-dw`
+O projeto lê a `tabela_centralizadora_assinaturas` no projeto GCP `solides-ai-data-dw`
 nos dois ambientes; o que muda é apenas o dataset:
 
 - homologação → `homologacao_centralizador`
@@ -20,5 +20,5 @@ Consequência prática: nunca tratar "consegui ler homol" como prova de que prod
 está isolado; e qualquer vazamento da chave de homol atinge produção.
 Confirmado em 25/08/2026 pelos `.env` dos dois ambientes.
 
-Relacionado: [[credenciais-integracoes-cit]], [[massa-cancelamento-tres-fontes]],
+Relacionado: [[permissoes-leitura-escrita-classificador]],
 [[cancelamento-produtos-novo-desenho]].

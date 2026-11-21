@@ -8,13 +8,13 @@
 #
 # Instalar no crontab do usuário (sexta 12:00):
 #   crontab -e
-#   0 12 * * 5 /var/www/html/cit/.cursor/scripts/relatorio_semanal.sh >> /tmp/relatorio-custos-cron.log 2>&1
+#   0 12 * * 5 <repo-de-produto>/.cursor/scripts/relatorio_semanal.sh >> /tmp/relatorio-custos-cron.log 2>&1
 #
 # Ou como systemd user timer (sobrevive a reboot, não exige sessão de login ativa):
 #   ~/.config/systemd/user/custos-cursor.service
 #       [Service]
 #       Type=oneshot
-#       ExecStart=/var/www/html/cit/.cursor/scripts/relatorio_semanal.sh
+#       ExecStart=<repo-de-produto>/.cursor/scripts/relatorio_semanal.sh
 #   ~/.config/systemd/user/custos-cursor.timer
 #       [Timer]
 #       OnCalendar=Fri *-*-* 12:00:00

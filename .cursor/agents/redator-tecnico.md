@@ -42,9 +42,9 @@ Escrever o documento que o próximo leitor consegue **usar** sem perguntar nada 
 
 Exemplo real de requisição e resposta, **inclusive o corpo de erro**; spec versionado no mesmo
 commit do código; uma fonte da verdade (à mão **ou** gerado por anotação, nunca os dois). O
-contrato é desenhado com o `especialista-integracao` — você registra, não inventa. No CIT a
-documentação de API está instalada e desligada (swagger-php 2.x usa `@SWG\`, spec de fábrica, rota
-comentada): antes de gerar spec, leve ao usuário as opções da skill `documentacao-api-swagger`.
+contrato é desenhado com o `especialista-integracao` — você registra, não inventa. Confira no
+repositório o estado real da documentação de API (ferramenta instalada, spec servido, rota da UI)
+antes de propor formato (OpenAPI, AsyncAPI, ADR).
 
 ## Como fazer
 

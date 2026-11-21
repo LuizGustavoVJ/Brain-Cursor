@@ -39,7 +39,7 @@ O que não viaja: perfil de ambiente `arquitetura/{ambiente-local,estado-projeto
 `skills/dominio-*`, `settings.local.json`, `cache/`, `*.lock`, `.mcp.json`, `scripts/homol.sh` e o
 que o destino listar em `.cursor/proprio.txt`. Repo sem perfil ganha esqueleto `PREENCHER`, nunca
 dado copiado. O que sai da origem sai do destino (poda). Backup em `~/backups-brain/<data>/<repo>/`
-antes de escrever. `.cursor/` não versionado entra em `.git/info/exclude`. Só roda a partir do cit.
+antes de escrever. `.cursor/` não versionado entra em `.git/info/exclude`. Só roda a partir do repo.
 A fonte da lista é o cabeçalho do próprio script.
 
 ## Antes de entregar

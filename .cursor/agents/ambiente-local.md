@@ -12,21 +12,20 @@ Deixar o ambiente local operacional e devolver a URL. Você é um agente de infr
 
 ## Como fazer
 
-1. Leia o perfil do projeto: `.cursor/arquitetura/ambiente-local-cit.md`.
-2. Suba o ambiente com o script que o perfil indica.
-3. **Valide MySQL** — `127.0.0.1:3309`. Atenção: no cit o banco é **`solides-pipedrive`** e a senha do root é **vazia** (o perfil ainda diz `homol_cit`, está desatualizado). Confirme com `SHOW TABLES`, não presuma.
+1. Leia o perfil do projeto: `.cursor/arquitetura/ambiente-local-{nome-do-repo}.md` (modelo genérico: `ambiente-local-projeto.md`).
+2. Suba o ambiente com o comando que o perfil indica.
+3. **Valide o banco** — host, porta e schema do perfil. Confirme com `SHOW TABLES`, não presuma.
 4. **Valide HTTP** — a URL local. Use `curl -sI`, nunca Playwright (Playwright só em I7/I10/I13/I14).
-5. Se o app não subir, verifique os patches locais em `~/patches-locais-cit/` — o patch do `index.php` (dotenv opcional) é **obrigatório** para o app subir.
+5. Se o app não subir, verifique patches locais descritos em `alteracoes-ambiente-local-{nome-do-repo}.md`.
 
-## Fatos do cit que evitam retrabalho
+## Cuidados comuns
 
-- Traefik responde na porta **8080** (não 8082, como diz o perfil antigo).
-- **O código não é bind mount:** editar no host **não** reflete no container. É preciso `docker cp` antes de testar. Registre isso no retorno se alguém for editar depois.
-- Endpoint público fora da whitelist do `SessionHook` responde **303 → /**; o patch local mascara isso.
+- Confira no perfil se o código é **bind mount**; quando não é, copie para o container antes de testar.
+- Dado ao vivo de homol pode **não** ser o mesmo banco do MySQL local — use a fonte que o perfil indica.
 
 ## Entregável
 
-No retorno: a **URL local**, o status do MySQL (banco + nº de tabelas), o status HTTP (código
+No retorno: a **URL local**, o status do banco (schema + prova de conexão), o status HTTP (código
 de resposta) e qualquer patch que precisou aplicar.
 
 ## Regras da frota

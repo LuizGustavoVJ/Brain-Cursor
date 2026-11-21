@@ -17,7 +17,7 @@ não fundido aqui).
 scratchpad da sessão (scratchpad é só para intermediário: script gerador, dump bruto).
 
 **Nomenclatura de card:** `{card-id} = {número}-{Descrição-Kebab}` derivado do título do card
-(ex.: 156057 "Cliente sem Base no CIT" → `156057-Cliente-sem-Base-no-CIT`) — **nunca só o número**.
+(ex.: 156057 "Cliente sem Base" → `156057-Cliente-sem-Base`) — **nunca só o número**.
 Idêntico, mesmo casing, nas 4 localizações: `docs/fluxos/{tipo}/{card-id}.md`,
 `docs/analises/{tipo}/{card-id}.md`, `docs/evidencias/html/{tipo}/{card-id}/evidencias.html` e
 `docs/evidencias/assets/{tipo}/{card-id}/`.

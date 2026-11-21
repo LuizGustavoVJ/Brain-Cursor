@@ -5,10 +5,10 @@ O que viaja: frota de agentes, comandos, scripts e hooks — a parte *generica*.
 O que NAO viaja: mapas `dominio-*` (conhecimento de um repo so) e os perfis de
 ambiente. Cada repo tem os seus.
 
-Os agentes do cit carregam fatos especificos deste repositorio (porta, banco,
-catch-all de rota, bind mount). Na versao do plugin essas secoes sao removidas e
-substituidas por um apontamento ao perfil local — senao o plugin espalha a
-configuracao do cit para repos onde ela e falsa.
+Os agentes do repositorio canônico podem carregar fatos especificos de um produto
+(porta, banco, bind mount). Na versao do plugin essas secoes sao removidas e
+substituidas por um apontamento ao perfil local — senao o plugin espalha configuracao
+falsa para outros repos.
 
 Uso: gerar_plugin.py [destino]     (default: ~/solides-brain-plugin)
 
@@ -25,24 +25,24 @@ import sys
 RAIZ = pathlib.Path(__file__).resolve().parents[2]
 VERSAO = "1.0.0"
 
-# Secoes inteiras que sao especificas do cit e nao devem viajar
+# Secoes inteiras especificas de um produto e que nao devem viajar
 SECOES_LOCAIS = [
-    "## Fatos do cit que evitam retrabalho",
+    "## Fatos do repo que evitam retrabalho",
     "## Armadilha estrutural deste repositório",
     "## Cuidados que este repositório cobra caro",
 ]
 
 # Trechos com fato local -> versao generica
 SUBSTITUICOES = [
-    # (trecho literal do cit, versao generica) — literal, nao regex: markdown escapa mal
-    ("Atenção: no cit o banco é **`solides-pipedrive`** e a senha do root é **vazia** "
-     "(o perfil ainda diz `homol_cit`, está desatualizado). Confirme com `SHOW TABLES`, não presuma.",
+    # (trecho literal do repo, versao generica) — literal, nao regex: markdown escapa mal
+    ("Atenção: no repo o banco é **`solides-pipedrive`** e a senha do root é **vazia** "
+     "(o perfil ainda diz `schema_homol_local`, está desatualizado). Confirme com `SHOW TABLES`, não presuma.",
      "Confirme banco, porta e credenciais **no perfil do projeto** e valide com `SHOW TABLES` — "
      "perfis desatualizam, não presuma."),
-    ("`.cursor/arquitetura/ambiente-local-cit.md`",
+    ("`.cursor/arquitetura/ambiente-local-projeto.md`",
      "`.cursor/arquitetura/ambiente-local-{projeto}.md`"),
     ("**Valide MySQL** — `127.0.0.1:3309`.", "**Valide MySQL** — host e porta do perfil."),
-    ("Se o app não subir, verifique os patches locais em `~/patches-locais-cit/` — o patch do "
+    ("Se o app não subir, verifique os patches locais em `~/patches-locais-do-perfil/` — o patch do "
      "`index.php` (dotenv opcional) é **obrigatório** para o app subir.",
      "Se o app não subir, verifique os patches locais descritos em "
      "`alteracoes-ambiente-local-{projeto}.md`."),
@@ -61,7 +61,7 @@ SUBSTITUICOES = [
      "Use o endpoint `/homologacao/execucao-controlada`.",
      "5. Confirme no perfil qual é a fonte de dado **ao vivo** de homologação — pode não ser o "
      "mesmo banco que você usa localmente."),
-    # --- Fase 3 (25/09/2026): fatos do cit que entraram nos agentes fundidos
+    # --- Fase 3 (25/09/2026): fatos do repo que entraram nos agentes fundidos
     ("Dado ao vivo de homol: o endpoint\n   `/homologacao/execucao-controlada` (o MySQL `:3309` é dump congelado).",
      "Dado ao vivo de homol: a fonte\n   que o perfil do projeto indica (pode não ser o banco local)."),
     ("- Título de card não é diagnóstico (\"erro de ganho farmer\" já foi fluxo Mid com `origin = NULL`):\n"
@@ -78,7 +78,7 @@ SUBSTITUICOES = [
      "confira o arquivo de rotas **e** a lista de liberação do hook de sessão"),
     ("303 para `/` = rota fora da whitelist do `SessionHook`",
      "3xx para `/` = rota barrada pelo hook de sessão"),
-    ("O CIT não tem design system: siga o estilo do arquivo vizinho, sem componente novo.",
+    ("O projeto não tem design system: siga o estilo do arquivo vizinho, sem componente novo.",
      "Sem design system no repo, siga o estilo do arquivo vizinho, sem componente novo."),
     ("No CIT a\ndocumentação de API está instalada e desligada (swagger-php 2.x usa `@SWG\\`, spec de fábrica, rota\n"
      "comentada): antes de gerar spec, leve ao usuário as opções da skill `documentacao-api-swagger`.",
@@ -98,7 +98,7 @@ SUBSTITUICOES = [
     ("Crie, no formato do `dominio-termo-aceite`.",
      "Crie um, seguindo o formato dos mapas já existentes no repositório."),
     ("`~/.cursor/projects/-var-www-html-cit/memory/`", "o diretório de memória do projeto"),
-    # gatilhos.tsv: o regex de deteccao cita coisa que so existe no cit — homol.sh (script
+    # gatilhos.tsv: o regex de deteccao cita coisa que so existe no repo — homol.sh (script
     # que nao viaja) e CMOVIMENTOS (tabela do CRM). Regex morto nao quebra o hook, mas ensina
     # o repo destino a procurar o artefato errado.
     ("cmd:(\\bmysql\\b|homol\\.sh\\s+(select|update))", "cmd:(\\bmysql\\b|\\bpsql\\b)"),
@@ -150,7 +150,7 @@ def main():
     print(f"comandos: {len(list((plug / 'commands').glob('*.md')))}")
 
     # ---- scripts do Brain
-    # homol.sh NAO entra: o endpoint de execucao controlada e do CIT; em outro repo a
+    # homol.sh NAO entra: script de produto; em outro repo a
     # fonte de dado ao vivo de homologacao e outra, e um script que aponta para o host
     # errado e pior que script ausente.
     SCRIPTS = ["kb.sh", "ancoras.py", "hook_dominio.py", "hook_gatilhos.py",
@@ -258,13 +258,13 @@ ancoras `arquivo:linha` dos mapas de dominio. Versao {VERSAO}.
 
 ## Regenerar o plugin
 
-Os agentes do cit sao a fonte. Depois de edita-los:
+Os agentes em `.cursor/agents/` sao a fonte. Depois de edita-los:
 
 ```
 python3 .cursor/scripts/gerar_plugin.py
 ```
 
-O gerador remove as secoes especificas do cit e generaliza os trechos com fato local — a lista
+O gerador remove secoes especificas de produto e generaliza trechos com fato local — a lista
 do que foi generalizado sai no stdout, para conferencia.
 """)
 

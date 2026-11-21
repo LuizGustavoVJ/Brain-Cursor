@@ -27,16 +27,9 @@ description: >-
 
 O deploy é definido no `.gitlab-ci.yml` do repositório e executado **fora do fluxo do agente**. O ciclo S1–S6 / I1–I15 **encerra na validação das evidências (I15)** — o agente **não** faz merge, deploy nem altera branch.
 
-No **cit** (`.gitlab-ci.yml:1-58`), o pipeline tem hoje **só um stage ativo**, `deploy` — `test` está comentado (`.gitlab-ci.yml:11`). Dois jobs, cada um restrito por `only`:
+Exemplo comum em repos PHP legados: stage `deploy` ativo e stage `test` comentado; jobs `deploy to staging` / `deploy to prod` com `only` em `staging` e `master`. Alguns repos mantêm job `test-e2e` comentado que dispara pipeline **externo** de QA em vez de Playwright no runner local.
 
-| Job | `only` | Script |
-|-----|--------|--------|
-| `deploy to staging` | `staging` | `.gitlab-deploy-staging.sh` |
-| `deploy to prod` | `master` | `.gitlab-deploy.sh` |
-
-Há um job `test-e2e` **inteiro comentado** (`.gitlab-ci.yml:23-38`) que dispara (`trigger:`) o pipeline de outro projeto GitLab, `solides/qualityassurance/cit-ui-tests`, em vez de rodar Playwright localmente no runner do cit — sinal de que a intenção original era um pipeline E2E **externo**, não um job Playwright dentro deste `.gitlab-ci.yml`. Confirmar o estado desse projeto satélite antes de reativar.
-
-Detalhes do pipeline (jobs, scripts, ambientes) variam por projeto → ver o `.gitlab-ci.yml` do repositório atual antes de generalizar o que está descrito acima para outro repo.
+Detalhes (jobs, scripts, ambientes) variam por projeto → leia o `.gitlab-ci.yml` do repositório atual.
 
 ## O que o CI **não** faz hoje
 
@@ -46,7 +39,7 @@ Detalhes do pipeline (jobs, scripts, ambientes) variam por projeto → ver o `.g
 
 ## Playwright em CI — proposta (ainda não implementada)
 
-Isto é **roadmap**, não o estado do repositório — não afirmar em evidência de card que o CI já valida E2E. Ao implementar, alinhar a imagem Docker com a versão real do `@playwright/test` em `testes/package.json` (no cit, **1.49.0** — não copiar uma versão de imagem sem checar o `package.json` primeiro):
+Isto é **roadmap**, não o estado do repositório — não afirmar em evidência de card que o CI já valida E2E. Ao implementar, alinhar a imagem Docker com a versão real do `@playwright/test` em `testes/package.json` (no repo, **1.49.0** — não copiar uma versão de imagem sem checar o `package.json` primeiro):
 
 ```yaml
 stages:
@@ -92,7 +85,7 @@ Project `homol` exige deploy na URL homol remota do projeto (ver perfil `arquite
 - [ ] `npm ci` (não `npm install`) para reprodutibilidade
 - [ ] Artifacts de report em falha
 - [ ] Não quebrar deploy existente (jobs `only`/`rules` explícitos)
-- [ ] Decidir se reativa o `test-e2e` (trigger para `cit-ui-tests`) em vez de duplicar um job local
+- [ ] Decidir se reativa trigger E2E externo em vez de duplicar job Playwright local
 
 Mesmo com CI, o fluxo humano I7–I11 permanece até decisão formal de substituir gates locais por pipeline.
 

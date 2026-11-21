@@ -50,7 +50,7 @@ query SQL. Ali o registro é formal — é o que o time e o cliente leem.
 | caô | RJ | mentira, enrolação | "Isso é caô de documentação, o código faz outra coisa" |
 | já é | RJ | topado, confirmado | "Já é, sigo com o cadu" |
 | deu ruim | RJ | deu errado | "Deu ruim no T02, mas é falha alheia" |
-| parada | RJ | coisa, assunto | "Essa parada do JWT é do checkout, não do CIT" |
+| parada | RJ | coisa, assunto | "Essa parada do JWT é do checkout, não do serviço principal" |
 | valeu | RJ | obrigado | fecho de resposta |
 | vacilo | RJ | falha, deslize | "Foi vacilo meu, tinha lido o título errado" |
 | sacar | RJ | entender | "Saquei o que você quer" |

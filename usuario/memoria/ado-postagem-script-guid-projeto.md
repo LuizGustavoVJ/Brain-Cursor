@@ -32,4 +32,4 @@ ADO_PROJECT=3acd1fd1-e624-4002-bdbd-532f45aeb902 \
 
 Fluxo que funcionou: montar cópia com body limpo no scratchpad → `ADO_PROJECT=GUID python3 ... <copia> <wid> [comment_id]`.
 
-Card 156057: comentário id 13542596. Card 156306: comentário id 13549587. Relacionado: [[padrao-html-evidencias]], [[nomenclatura-docs-card-id]], [[ambiente-cit-porta-banco-divergentes]].
+Card 156057: comentário id 13542596. Card 156306: comentário id 13549587. Relacionado: [[entrega-de-artefatos]].

@@ -64,8 +64,6 @@ porque muda com o `settings.json`.
 | `scripts/brain_status.sh` | Diagnóstico: frota, conhecimento, reflexos, pendências |
 | `scripts/frota.sh` | `listar` · `buscar <tema>` · `grupos` · `modelos` · **`gatilhos`** · `lint` — catálogo, calibragem, gatilho por artefato e integridade |
 | `scripts/mcp.sh` | `listar` · `checar` · `agentes` — inventário e **saúde** dos MCPs; MCP quebrado é pior que ausente |
-| `scripts/homol.sh` | `select` · `update` · `limpar` · `ping` — dado **ao vivo** de homologação (o MySQL `:3309` é dump congelado). **Só no cit** |
-| `scripts/local.sh` | `status` · `apply` · `restore-repo` — patches locais (obrigatório antes de commit/PR) |
 | `scripts/propagar.sh` | `--dry-run` · sem argumento replica o Brain em **todos** os repos git da máquina (backup datado antes) e **poda** no destino o que saiu da origem — o que é do destino se declara em `.cursor/proprio.txt` |
 | `scripts/gerar_plugin.py` | Empacota o Brain em `~/solides-brain-plugin` (**fora** de `.cursor/`) para os outros repos |
 

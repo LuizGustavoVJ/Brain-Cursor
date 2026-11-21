@@ -4,7 +4,7 @@ Referência das automações ativas e MCPs recomendados para o fluxo S1–I15.
 
 > **Scripts de ambiente, URLs e portas** são específicos de cada projeto → ver o perfil `arquitetura/ambiente-local-{projeto}.md` do projeto atual. O nome do script de sync (`dev-sync.sh`) e do script de subida do ambiente varia por repositório.
 >
-> **Atenção ao nome `local.sh`:** neste repositório `.cursor/scripts/local.sh` é o script de **patches locais** (`status` · `apply` · `restore-repo`), não o de subir o ambiente. Ver [alteracoes-ambiente-local-cit.md](alteracoes-ambiente-local-cit.md) § *Patches PHP locais*.
+> Patches locais de produto ficam **fora do Brain-Cursor** — ver `alteracoes-ambiente-local-{repo}.md` no repositório de aplicação.
 
 ---
 
@@ -24,7 +24,7 @@ Referência das automações ativas e MCPs recomendados para o fluxo S1–I15.
 | `cd testes && npm run test:{e2e\|local\|homol}*`, `npm install*`, `npx playwright*` | I7 / I10 / I13 |
 | `docker ps*`, `docker logs*`, `docker compose*` | L0 — gerenciar/diagnosticar container |
 | `ss -tlnp*` | L0 — conferir portas em escuta |
-| **scripts do Brain** — `resumo_testes.sh`, `fase.sh`, `kb.sh`, `frota.sh`, `local.sh`, `brain_status.sh`, `ancoras.py`, `cache_validacao.py`, `relatorio_*` | rodam sem prompt em qualquer etapa |
+| **scripts do Brain** — `resumo_testes.sh`, `fase.sh`, `kb.sh`, `frota.sh`, `brain_status.sh`, `ancoras.py`, `cache_validacao.py`, `relatorio_*` | rodam sem prompt em qualquer etapa |
 
 A lista literal e completa é o próprio arquivo — enumerar as ~36 entradas aqui desatualiza na
 primeira permissão nova. Para ver a lista viva:
@@ -249,7 +249,7 @@ Os hooks `PostToolUse` (sync) e `PreToolUse` (guarda de commit) são **opcionais
 
 - **Sync após editar:** se o código não for bind mount, rodar o script de sync / `docker cp` conforme o perfil `arquitetura/ambiente-local-{projeto}.md`.
 - **Antes de commit/PR:** reverter os patches locais. Neste repositório o comando é
-  `.cursor/scripts/local.sh restore-repo` — ver [alteracoes-ambiente-local-cit.md](alteracoes-ambiente-local-cit.md)
+  reverter patches locais conforme [alteracoes-ambiente-local-projeto.md](alteracoes-ambiente-local-projeto.md)
   § *Patches PHP locais*. É **gate do AGENTS.md**, não sugestão.
 
 Para saber o que está ativo agora:
@@ -291,7 +291,7 @@ sessão (Opus) mesmo quando a validação é estrutural, e recebe todo o context
 | [`ado_update_comment.py`](../scripts/ado_update_comment.py) | Postagem de evidências no card — pelo agente após "sim" ou pelo usuário; em `ask` | Pós-S6a / Pós-I11 / Pós-I15 |
 
 Os scripts de **conhecimento e frota** (`kb.sh`, `ancoras.py`, `frota.sh`, `brain_status.sh`,
-`local.sh`, `gerar_plugin.py`) estão na tabela do [`.cursor/README.md`](../README.md) §
+`gerar_plugin.py`) estão na tabela do [`.cursor/README.md`](../README.md) §
 *Scripts do Brain* — as duas listas são complementares, não cópias.
 
 `.cursor/cache/` (cache de validação e logs de teste) é transitório e não versionado.
@@ -324,7 +324,7 @@ resumo. É o que deve ser agendado fora do Cursor.
 ```bash
 crontab -e
 # sexta 12:00
-0 12 * * 5 /var/www/html/cit/.cursor/scripts/relatorio_semanal.sh >> /tmp/relatorio-custos-cron.log 2>&1
+0 12 * * 5 <repo-de-produto>/.cursor/scripts/relatorio_semanal.sh >> /tmp/relatorio-custos-cron.log 2>&1
 ```
 
 **Opção B — systemd user timer** (sobrevive a reboot, tem histórico de execução):
@@ -333,7 +333,7 @@ crontab -e
 # ~/.config/systemd/user/custos-cursor.service
 [Service]
 Type=oneshot
-ExecStart=/var/www/html/cit/.cursor/scripts/relatorio_semanal.sh
+ExecStart=<repo-de-produto>/.cursor/scripts/relatorio_semanal.sh
 
 # ~/.config/systemd/user/custos-cursor.timer
 [Timer]

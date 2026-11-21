@@ -354,7 +354,6 @@ sobre o schema concreto do card, por isso vai para "Lacunas".
 | `pdf` | skill da conta | `pesquisador-web` | manual, contrato, norma, transcrição de terceiro em PDF | a citação obrigatória de página/seção |
 | `docx` | skill da conta | `pesquisador-web`, `redator-tecnico` | documento recebido de negócio, ou entregável pedido em Word | documento do fluxo, que é `.md`/`.html` em `docs/` |
 | `xlsx` | skill da conta | `especialista-sql`, `pesquisador-web` | planilha como entrada (massa, catálogo) ou saída pedida | o gatilho `metrica` — a definição do número é conferida antes |
-| `documentacao-api-swagger` | skill Brain (propaga) | `redator-tecnico` | publicar/documentar endpoint (OpenAPI, AsyncAPI, ADR) | — |
 | `docs` (docs publicados) | skill da conta | contexto principal, a pedido | documento vivo para leitor de fora do fluxo | **nada do fluxo de card** — ver "Regra de fronteira" abaixo |
 | `Figma` (`generate_diagram`) | conector de conta | contexto principal (subagente só escreve o Mermaid) | S1/pré-I1/S3/I1 — fluxo, árvore de decisão, integração, schema — ver "Diagramação — conector `Figma`" acima | o Mermaid no `.md`, que é o entregável e sustenta gate — o board é só visualização |
 
@@ -391,7 +390,7 @@ sobre o schema concreto do card, por isso vai para "Lacunas".
 | `ambientes-e-testes` | skill Brain (propaga) | `ambiente-local`, `especialista-docker` | L0, container que não sobe — gatilho `container` (`gatilhos.tsv`) | o perfil `arquitetura/ambiente-local-*`, fonte única de URL/porta/BD |
 | `run` | CLI embutida | `ambiente-local` | L0 quando o repo não tem receita própria (`docker compose up`, `make up` — ver `estado-projeto-hubspot-adapter.md`) | a própria `ambientes-e-testes` |
 
-Os 13 projetos não são uniformes aqui: `cit`/`solides-crm`/`partners` sobem por `docker compose`,
+Os repositórios Solides não são uniformes: vários sobem por `docker compose`,
 `hubspot-adapter` por `make up`, `debt-processing-service` por `./docker/dev-up.sh` — cada um com
 receita própria no seu `estado-projeto-*.md`, nenhuma delas skill externa.
 
@@ -426,7 +425,6 @@ Detalhe completo de autenticação, escopo e tools já está na seção **"Monit
 |---|---|---|---|---|
 | `integracao-apis` | skill Brain (propaga) | `especialista-integracao`, `desenvolvedor` | alterar libraries/helpers de chamada HTTP a terceiro — gatilho `terceiro` (`gatilhos.tsv`) | a idempotência do retry em si, que é do `especialista-financeiro-cobranca` |
 | `small-business/build-connector` | plugin (referência) | `engenheiro-de-brain` | mapear conector → quem consome → fallback quando cai (mesma linha do Grupo 7) | a implementação do webhook, que é do `especialista-integracao` |
-| `documentacao-api-swagger` | skill Brain (propaga) | `redator-tecnico` | publicar/documentar o contrato do endpoint exposto (mesma linha do Grupo 4) | — |
 
 ### 13. Postman / collection de cenários (etapa PC)
 
