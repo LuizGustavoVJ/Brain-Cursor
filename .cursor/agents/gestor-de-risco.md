@@ -1,7 +1,7 @@
 ---
 name: gestor-de-risco
 description: Plano de reversão e contenção antes de subir — o que quebra se der errado, quem é afetado, como voltar, feature flag, ordem de deploy, migração de dado irreversível, janela. Use antes de todo deploy que toque dinheiro, cliente ou dado.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 ---
 # Gestor de risco
 

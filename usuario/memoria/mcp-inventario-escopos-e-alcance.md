@@ -1,6 +1,6 @@
 ---
 name: mcp-inventario-escopos-e-alcance
-description: Os MCPs vivem em dois escopos (.mcp.json do projeto e ~/.claude.json do usuário); servidor de pé não basta — a tool tem de estar declarada no frontmatter do agente
+description: Os MCPs vivem em dois escopos (.mcp.json do projeto e ~/.cursor/mcp.json do usuário); servidor de pé não basta — a tool tem de estar declarada no frontmatter do agente
 metadata: 
   node_type: memory
   type: reference
@@ -13,13 +13,13 @@ Inventário conferido em 21/08/2026 (`.cursor/scripts/mcp.sh checar`); revisto e
 
 | Servidor | Escopo | Estado |
 |---|---|---|
-| `azure-devops` | usuário (`~/.claude.json`) | ok — leitura de card em C0 |
+| `azure-devops` | usuário (`~/.cursor/mcp.json`) | ok — leitura de card em C0 |
 | `playwright` | usuário | ok — captura em I7/I10/I13/I14 |
 | `gitlab` | usuário | ok, `GITLAB_READ_ONLY_MODE=true`, `gitlab.solides.com.br` |
 | `hubspot` | usuário | ok desde 27/08/2026 — sandbox, ver [[mcp-hubspot-sandbox-configurado]] |
 
 **Zendesk: descontinuado em 21/08/2026** por decisão do usuário ("não vai subir, não vamos usar
-mais"). Removido de `~/.claude.json` (backup em `~/.claude.json.bak-20260821-zendesk`) e as 19
+mais"). Removido de `~/.cursor/mcp.json` (backup em `~/.cursor/mcp.json.bak-20260821-zendesk`) e as 19
 entradas saíram do `settings.json`. Consequência a assumir: ticket de cliente entra no card por
 copiar e colar. Sobrou a declaração em `partners/.mcp.json` — outro repo, precisa de permissão.
 
@@ -50,5 +50,5 @@ saúde e quem da frota alcança cada servidor). Ver [[fonte-unica-nunca-duplicar
 [[verificar-antes-de-deduzir]].
 
 Quarto ponto, aprendido em 27/08/2026: **servidor recém-adicionado não vale na sessão em
-curso** — as tools só entram no reinício do Claude Code. Para conferir o que ele expõe sem
+curso** — as tools só entram no reinício do Cursor. Para conferir o que ele expõe sem
 reiniciar, subir o binário na mão por stdio e mandar `initialize` + `tools/list`.

@@ -7,7 +7,7 @@ metadata:
 
 Em 18/09/2026 o usuário instalou os plugins `datadog` e `grafana-cloud-mcp` **de propósito**: quer
 monitoramento dos projetos, embora nenhum repositório tenha instrumentação hoje (o grep só acha
-`vendor/aws-sdk`). O **Grafana ficou ligado em 18/09/2026** (`claude mcp get grafana-cloud` →
+`vendor/aws-sdk`). O **Grafana ficou ligado em 18/09/2026** (`cursor mcp get grafana-cloud` →
 `Status: ✔ Connected`). O **Datadog continua desligado** — falta chave de API.
 
 **Prefixo real das tools** (sai do nome do SERVIDOR, não do plugin): Datadog = `mcp__plugin_datadog_mcp__*`
@@ -28,12 +28,12 @@ declarar só as de leitura, conferidas contra a lista viva do servidor. Escrita 
 e o `ask_assistant`, que é write-scoped) para no chat e espera OK.
 
 **Como o Grafana foi ligado (18/09, medido — CONCLUÍDO):** o botão "Vincular" do plugin fica cinza porque o conector
-`grafana-cloud` não existe na conta — `claude mcp list` não o traz. O caminho que funciona não passa
-por esse botão: `claude mcp add --transport http grafana-cloud https://mcp.grafana.com/mcp --scope
-user` e depois **`claude mcp login grafana-cloud`** no terminal (Claude Code faz Dynamic Client
+`grafana-cloud` não existe na conta — `cursor mcp list` não o traz. O caminho que funciona não passa
+por esse botão: `cursor mcp add --transport http grafana-cloud https://mcp.grafana.com/mcp --scope
+user` e depois **`cursor mcp oauth grafana-cloud`** no terminal (Cursor faz Dynamic Client
 Registration sozinho; sem client id/secret). O `login` é melhor que o `/mcp`: não depende de menu
 nem de sessão interativa, e foi ele que destravou — o `/mcp` estava sombreado por comando do Brain
-(ver [[comando-de-projeto-sombreia-embutido]]). Desfaz com `claude mcp remove grafana-cloud --scope user`. O classificador de
+(ver [[comando-de-projeto-sombreia-embutido]]). Desfaz com `cursor mcp remove grafana-cloud --scope user`. O classificador de
 auto mode barra o `mcp add` para o agente (Unauthorized Persistence) — **quem roda é o usuário**.
 Pré-condição do lado Grafana: stack Grafana Cloud existente, termos do Grafana Assistant aceitos
 por um admin e papel Editor ou superior; sem isso o servidor fica em "Needs authentication".

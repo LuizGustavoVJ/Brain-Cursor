@@ -1,7 +1,7 @@
 ---
 name: mapeador-fluxo
 description: Etapa S1 — mapeia o fluxo real do código ponta a ponta (entrada, rotas, libraries, BD, integrações) e produz o documento de fluxo. Use no início de qualquer card de sustentação. Descreve o que o código FAZ; não julga nem propõe correção.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Mapeador de fluxo — etapa S1
 

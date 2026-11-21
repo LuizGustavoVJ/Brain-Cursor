@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Relatório de custos das sessões Claude Code do projeto atual.
+"""Relatório de custos das sessões Cursor do projeto atual.
 
 Lê os transcripts JSONL em ~/.cursor/projects/{slug}/ e apura, por período:
 
@@ -14,7 +14,7 @@ Uso:
     python3 .cursor/scripts/relatorio_custos.py --dias 7
     python3 .cursor/scripts/relatorio_custos.py --dias 30 --formato json
 
-Preços: USD por milhão de tokens (Anthropic API, 1ª parte).
+Preços: USD por milhão de tokens (API de modelos, 1ª parte).
 Cache read = 0,1x input · cache write 5min = 1,25x input · cache write 1h = 2x input.
 Atualize PRECOS quando a tabela oficial mudar.
 """
@@ -32,17 +32,17 @@ from pathlib import Path
 
 # input USD/MTok por modelo; output derivado da coluna correspondente
 PRECOS = {
-    "claude-fable-5":   (10.0, 50.0),
-    "claude-mythos-5":  (10.0, 50.0),
-    "claude-opus-5":    (5.0, 25.0),
-    "claude-opus-4-8":  (5.0, 25.0),
-    "claude-opus-4-7":  (5.0, 25.0),
-    "claude-opus-4-6":  (5.0, 25.0),
-    "claude-opus-4-5":  (5.0, 25.0),
-    "claude-sonnet-5":  (3.0, 15.0),
-    "claude-sonnet-4-6": (3.0, 15.0),
-    "claude-sonnet-4-5": (3.0, 15.0),
-    "claude-haiku-4-5": (1.0, 5.0),
+    "gpt-5.6-sol-medium":   (10.0, 50.0),
+    "gpt-5.6-sol-medium":  (10.0, 50.0),
+    "gpt-5.6-sol-high":    (5.0, 25.0),
+    "gpt-5.6-sol-high":  (5.0, 25.0),
+    "gpt-5.6-sol-high":  (5.0, 25.0),
+    "gpt-5.6-sol-high":  (5.0, 25.0),
+    "gpt-5.6-sol-high":  (5.0, 25.0),
+    "gpt-5.6-sol-medium":  (3.0, 15.0),
+    "gpt-5.6-sol-medium": (3.0, 15.0),
+    "gpt-5.6-sol-medium": (3.0, 15.0),
+    "gemini-4-carbon-low": (1.0, 5.0),
 }
 PRECO_PADRAO = (5.0, 25.0)  # fallback: tarifa Opus
 
@@ -57,7 +57,7 @@ RE_VALIDACAO = re.compile(
 
 
 def normaliza_modelo(model: str) -> str:
-    """`claude-opus-5[1m]` e `claude-haiku-4-5-20251001` -> chave da tabela."""
+    """`gpt-5.6-sol-high[1m]` e `gemini-4-carbon-low-20251001` -> chave da tabela."""
     m = model.split("[")[0]
     if m in PRECOS:
         return m
@@ -85,7 +85,7 @@ def custo(model: str, u: dict) -> float:
 
 def dir_transcripts(projeto: Path) -> Path:
     slug = str(projeto).replace("/", "-")
-    return Path.home() / ".claude" / "projects" / slug
+    return Path.home() / ".cursor" / "projects" / slug
 
 
 def tipo_subagente(arquivo: Path) -> str:
@@ -211,7 +211,7 @@ def relatorio_md(r: dict, dias: int) -> str:
     hoje = datetime.now().strftime("%Y-%m-%d")
     total = r["custo_total"]
     L = [
-        f"# Relatório de custos — Claude Code · projeto `cit`",
+        f"# Relatório de custos — Cursor · projeto `cit`",
         "",
         f"**Gerado em:** {hoje} · **Janela:** últimos {dias} dias · "
         f"**Sessões:** {r['sessoes']} · **Respostas do modelo:** {r['mensagens']}",
@@ -324,7 +324,7 @@ def relatorio_md(r: dict, dias: int) -> str:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Relatório de custos Claude Code")
+    ap = argparse.ArgumentParser(description="Relatório de custos Cursor")
     ap.add_argument("--dias", type=int, default=30, help="janela em dias (padrão 30)")
     ap.add_argument("--formato", choices=["md", "json"], default="md")
     ap.add_argument("--projeto", default=os.getcwd(), help="diretório do projeto")

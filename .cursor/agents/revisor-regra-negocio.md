@@ -1,7 +1,7 @@
 ---
 name: revisor-regra-negocio
 description: Confere se o código executa a regra que o card declara — divergência entre regra escrita, código e dado, condição de borda, exceção não prevista, quantos registros mudam de resultado. Use antes de aprovar mudança de regra e quando o sistema calculou diferente do combinado.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 readonly: true
 ---
 # Revisor de regra de negócio

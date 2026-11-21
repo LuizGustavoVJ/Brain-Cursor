@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# skills_conta.sh — resolve as habilidades que a conta claude.ai sincroniza para esta máquina.
+# skills_conta.sh — resolve as habilidades que a conta cursor.com sincroniza para esta máquina.
 #
 # Três camadas, três destinos diferentes no disco:
 #   1. skills da conta   ~/.cursor/skills/synced/<bucket>/<nome>/SKILL.md      (invocáveis: Skill)
@@ -12,7 +12,7 @@
 # ler um caminho morto. Aqui o nome é a chave; o UUID é detalhe de implementação.
 #
 # Tudo isso é ESCOPO DE USUÁRIO: vale em todos os repositórios sem propagação. O Brain
-# (.cursor/) propaga; isto não — quem instala é a conta, em claude.ai.
+# (.cursor/) propaga; isto não — quem instala é a conta, em cursor.com.
 #
 # Uso:
 #   skills_conta.sh listar                 # as três camadas
@@ -28,7 +28,7 @@ RAIZ="${HOME}/.cursor/skills/synced"
 RAIZ_PLUG="${HOME}/.cursor/plugins/synced"
 
 # as embutidas não têm arquivo antes da primeira invocação; a lista é do catálogo do CLI
-EMBUTIDAS="code-review security-review simplify dataviz claude-api update-config \
+EMBUTIDAS="code-review security-review simplify dataviz cursor-billing update-config \
 fewer-permission-prompts run loop schedule workflow-authoring artifact-design \
 artifact-diagramming artifact-capabilities keybindings-help init"
 

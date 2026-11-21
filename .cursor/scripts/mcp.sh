@@ -8,9 +8,9 @@
 #
 # Uso: .cursor/scripts/mcp.sh [listar|checar|agentes]   (sem argumento = checar tudo)
 #
-# Escopos que o Claude Code lê, na ordem em que o projeto vence:
+# Escopos que o Cursor lê, na ordem em que o projeto vence:
 #   projeto  → ./.mcp.json               (gitignored; vale só neste repo)
-#   usuário  → ~/.claude.json mcpServers (vale em todos os repos)
+#   usuário  → ~/.cursor/mcp.json mcpServers (vale em todos os repos)
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 1
 
@@ -19,7 +19,7 @@ python3 - <<'PY'
 import json, os
 OK, ERR, AV = "✓", "✗", "!"
 proj = json.load(open(".mcp.json")).get("mcpServers", {}) if os.path.isfile(".mcp.json") else {}
-g = os.path.expanduser("~/.claude.json")
+g = os.path.expanduser("~/.cursor/mcp.json")
 glob = json.load(open(g)).get("mcpServers", {}) if os.path.isfile(g) else {}
 
 print("=== MCPs declarados ===")
@@ -43,7 +43,7 @@ python3 - <<'PY'
 import json, os
 OK, ERR, AV = "✓", "✗", "!"
 proj = json.load(open(".mcp.json")).get("mcpServers", {}) if os.path.isfile(".mcp.json") else {}
-g = os.path.expanduser("~/.claude.json")
+g = os.path.expanduser("~/.cursor/mcp.json")
 glob = json.load(open(g)).get("mcpServers", {}) if os.path.isfile(g) else {}
 
 print("=== Saúde dos MCPs ===")
@@ -91,7 +91,7 @@ PY
     echo
     echo "  ! o mesmo PAT do ADO está copiado em $n arquivos .mcp.json (um por repositório)."
     echo "    Rotação de PAT = editar $n arquivos; esquecer um quebra o C0 só naquele repo."
-    echo "    Consolidar em ~/.claude.json resolve, mas apaga declaração em outros repos:"
+    echo "    Consolidar em ~/.cursor/mcp.json resolve, mas apaga declaração em outros repos:"
     echo "    proponha e PEÇA PERMISSÃO antes (AGENTS.md § Regras de escopo)."
   fi
 }

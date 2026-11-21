@@ -1,7 +1,7 @@
 ---
 name: especialista-git
 description: Git e GitLab CI — branch, conflito, cherry-pick, histórico, reverter, o que está em qual branch, MR e pipeline (job vermelho, cache, artifact, .gitlab-ci.yml, deploy e reversão). Use antes de operação de histórico, com estado confuso ou pipeline falhando.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Especialista em Git e CI GitLab
 

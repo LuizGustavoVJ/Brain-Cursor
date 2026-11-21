@@ -34,12 +34,6 @@ python3 .cursor/scripts/gerar_plugin.py usuario/brain-plugin
 
 `bash .cursor/scripts/propagar.sh` — rsync do harness para clones locais (legado). Preferência futura: plugin Cursor (`usuario/brain-plugin`).
 
-## Migração Claude → Cursor
-
-Concluído P0+P1 neste branch: paths `.cursor/`, `AGENTS.md`, `hooks.json`, rules `.mdc`, agentes sem campo `tools:`.
-
-**P2 (pendente):** card piloto completo, permissões MCP via hooks `beforeMCPExecution`, commands→skills, Projects/coordinator, limpar refs `mcp__legacy_claude_ai_*`.
-
 ## Licença / uso
 
 Repositório operacional interno Solides. Não commitar secrets (`settings.local.json` está no `.gitignore`).

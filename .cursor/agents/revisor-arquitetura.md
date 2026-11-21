@@ -1,7 +1,7 @@
 ---
 name: revisor-arquitetura
 description: Arquitetura — revisa impacto sistêmico (ordem, idempotência, falha silenciosa, integrações, reversão) e desenha solução que cruza 2+ sistemas (fronteira, contrato, síncrono ou assíncrono). Use antes de plano grande ou pagamento/ganho entre sistemas. Só leitura.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 readonly: true
 ---
 # Revisor de arquitetura

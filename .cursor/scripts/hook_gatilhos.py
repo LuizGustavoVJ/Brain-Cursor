@@ -37,12 +37,12 @@ import re
 import sys
 import time
 
-RAIZ = pathlib.Path(os.environ.get("CLAUDE_PROJECT_DIR")
+RAIZ = pathlib.Path(os.environ.get("CURSOR_PROJECT_DIR")
                     or pathlib.Path(__file__).resolve().parents[2]).resolve()
 TABELA = RAIZ / ".cursor/frota/gatilhos.tsv"
-if not TABELA.is_file() and os.environ.get("CLAUDE_PLUGIN_ROOT"):
+if not TABELA.is_file() and os.environ.get("CURSOR_PLUGIN_ROOT"):
     # rodando empacotado como plugin: a tabela viaja em <plugin>/frota/
-    TABELA = pathlib.Path(os.environ["CLAUDE_PLUGIN_ROOT"]) / "frota/gatilhos.tsv"
+    TABELA = pathlib.Path(os.environ["CURSOR_PLUGIN_ROOT"]) / "frota/gatilhos.tsv"
 CACHE = RAIZ / ".cursor/cache/gatilhos"
 
 MAX_POR_MENSAGEM = 3      # o reflexo avisa, nao despeja catalogo

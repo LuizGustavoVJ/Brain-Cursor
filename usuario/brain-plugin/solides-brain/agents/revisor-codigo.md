@@ -1,7 +1,7 @@
 ---
 name: revisor-codigo
 description: Revisão de código linha a linha — bug, caso de borda, erro engolido, condição invertida, efeito colateral, legibilidade, aderência ao padrão do repositório. Use em diff, MR ou antes de fechar uma implementação. Somente leitura.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 readonly: true
 ---
 # Revisor de código

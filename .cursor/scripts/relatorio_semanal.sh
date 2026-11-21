@@ -11,17 +11,17 @@
 #   0 12 * * 5 /var/www/html/cit/.cursor/scripts/relatorio_semanal.sh >> /tmp/relatorio-custos-cron.log 2>&1
 #
 # Ou como systemd user timer (sobrevive a reboot, não exige sessão de login ativa):
-#   ~/.config/systemd/user/custos-claude.service
+#   ~/.config/systemd/user/custos-cursor.service
 #       [Service]
 #       Type=oneshot
 #       ExecStart=/var/www/html/cit/.cursor/scripts/relatorio_semanal.sh
-#   ~/.config/systemd/user/custos-claude.timer
+#   ~/.config/systemd/user/custos-cursor.timer
 #       [Timer]
 #       OnCalendar=Fri *-*-* 12:00:00
 #       Persistent=true
 #       [Install]
 #       WantedBy=timers.target
-#   systemctl --user enable --now custos-claude.timer
+#   systemctl --user enable --now custos-cursor.timer
 #   loginctl enable-linger "$USER"     # roda mesmo sem sessão gráfica aberta
 #
 # O relatório lê transcripts LOCAIS (~/.cursor/projects/) — por isso precisa rodar nesta

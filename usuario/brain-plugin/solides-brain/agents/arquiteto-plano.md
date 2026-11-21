@@ -1,7 +1,7 @@
 ---
 name: arquiteto-plano
 description: Etapa I1 — desenha o plano de implementação arquivo por arquivo (completo ou curto, conforme a trilha), com migration, testes previstos, rollback e fatiamento de mudança grande em passos seguros. Use antes de qualquer código. Planeja; não implementa.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 ---
 # Arquiteto do plano — etapa I1
 

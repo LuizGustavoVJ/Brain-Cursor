@@ -18,7 +18,7 @@ Origem: repositório `cit` (`/var/www/html/cit`), fonte única do Brain.
 
 ## Fora do pacote (de propósito)
 
-- `~/.claude.json`: guarda o PAT do ADO e credenciais de MCP. Não viaja em pacote.
+- `~/.cursor/mcp.json`: guarda o PAT do ADO e credenciais de MCP. Não viaja em pacote.
 - `.cursor/cache/`, `*.lock`, `*.bak*`, `__pycache__`: estado de execução, recriado sozinho.
 - Piper (`~/.local/opt/piper`): binário e modelo de voz; reinstale à parte.
 

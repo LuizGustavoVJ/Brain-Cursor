@@ -8,7 +8,7 @@ Uso:
 - comment_id informado -> PATCH (atualiza o comentário existente).
 - comment_id omitido   -> POST  (cria um novo comentário) e imprime o id.
 PAT (AZURE_DEVOPS_EXT_PAT) procurado nesta ordem: variavel de ambiente,
-~/.claude.json (escopo de usuario) e, por compatibilidade, .mcp.json do repo.
+~/.cursor/mcp.json (escopo de usuario) e, por compatibilidade, .mcp.json do repo.
 """
 import re, json, base64, sys, os, time, urllib.request, urllib.error, urllib.parse
 from html.parser import HTMLParser
@@ -19,13 +19,13 @@ ORG = os.environ.get("ADO_ORG", "solidestech")
 # sem ele o ADO devolve HTTP 404 ("controller ... was not found"). O embed de <img>
 # também exige o GUID na URL. Não há caso "só-texto sem projeto" — é sempre com projeto.
 PROJECT = os.environ.get("ADO_PROJECT")
-# Onde o PAT pode estar, em ordem de precedência. O escopo de usuário (~/.claude.json)
+# Onde o PAT pode estar, em ordem de precedência. O escopo de usuário (~/.cursor/mcp.json)
 # é a fonte viva desde 21/08/2026, quando os .mcp.json por repositório foram removidos
 # para não repetir o mesmo segredo em nove lugares. Os caminhos de repositório ficam
 # na lista só por compatibilidade — se um deles voltar a existir, continua funcionando.
 _AQUI = os.path.dirname(os.path.abspath(__file__))
 FONTES_PAT = [
-    os.path.expanduser("~/.claude.json"),
+    os.path.expanduser("~/.cursor/mcp.json"),
     os.path.normpath(os.path.join(_AQUI, "..", ".mcp.json")),        # <repo>/.cursor/.mcp.json
     os.path.normpath(os.path.join(_AQUI, "..", "..", ".mcp.json")),  # <repo>/.mcp.json
 ]

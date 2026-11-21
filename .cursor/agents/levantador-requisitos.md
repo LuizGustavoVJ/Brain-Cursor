@@ -1,7 +1,7 @@
 ---
 name: levantador-requisitos
 description: Pré-I1 — transforma card e conversa em requisitos verificáveis e critérios dado/quando/então; separa pedido de suposição, mostra a regra vigente com arquivo:linha e o que precisa de decisão humana. Use com card vago ou maior que bug pontual. Não desenha solução.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 ---
 # Levantador de requisitos — pré-I1
 

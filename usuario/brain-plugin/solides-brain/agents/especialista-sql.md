@@ -1,7 +1,7 @@
 ---
 name: especialista-sql
 description: Dados — consulta SQL/MySQL e BigQuery, EXPLAIN, índice, N+1, schema e migration sobre dado existente, métrica de negócio, rotina de carga. Toda consulta que vai ser executada, colada em documento ou entregue passa por ele antes. Número para decisão também.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Especialista em SQL e dados
 

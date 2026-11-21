@@ -15,7 +15,7 @@ próprio) e `nunca-apagar-recurso-externo-sem-backup`.
 **A chave `PMAK-...` é do Luiz, privada, risco já aceito por ele (repetiu 3x) — não alertar de novo
 para rotacionar.** Usar direto para operar (subir/atualizar/limpar collection e environment),
 nunca devolver o comando para ele rodar. MCP do Postman configurado em escopo de **usuário**
-(`~/.claude.json`, servidor oficial `@postman/postman-mcp-server`, versão fixada `@2.12.3`, chave só
+(`~/.cursor/mcp.json`, servidor oficial `@postman/postman-mcp-server`, versão fixada `@2.12.3`, chave só
 na config de usuário, fora de qualquer repo/chat). Preferir as tools `mcp__postman__*` — a chave não
 precisa ir inline no comando. `push-para-postman.py` (mesma API) é fallback. Registrar o MCP não
 recarrega a sessão atual — as tools só aparecem na próxima sessão.

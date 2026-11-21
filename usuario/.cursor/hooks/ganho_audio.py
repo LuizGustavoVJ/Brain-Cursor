@@ -6,7 +6,7 @@ O piper entrega picos no limite da escala e corpo de fala fraco (RMS medido em
 tanh multiplica o corpo e comprime o pico, deixando a voz mais alta e firme
 sem estalo. Sem numpy nem sox — a maquina nao tem nenhum dos dois.
 
-Ganho:  export CLAUDE_VOZ_GANHO=2.6   (padrao 2.0; 1.0 desliga)
+Ganho:  export cursor_VOZ_GANHO=2.6   (padrao 2.0; 1.0 desliga)
 """
 import array
 import math
@@ -14,7 +14,7 @@ import os
 import sys
 
 LIMITE = 32767
-GANHO = float(os.environ.get("CLAUDE_VOZ_GANHO", "2.0"))
+GANHO = float(os.environ.get("cursor_VOZ_GANHO", "2.0"))
 PASSO = 8  # tabela de 4096 entradas cobre a escala inteira
 
 

@@ -1,7 +1,7 @@
 ---
 name: destilador-dominio
 description: Aprendizado do Brain — destila o que o card ensinou nos mapas dominio-* e na memória, grava docs/destilacoes/<card>.md e mantém o acervo (INDICE, duplicata, vencido). Obrigatório a cada card, nas duas trilhas, ao trocar de card e antes de /clear.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Destilador de domínio — o aprendizado do Brain
 

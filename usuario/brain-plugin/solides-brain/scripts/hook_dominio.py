@@ -16,7 +16,7 @@ import os
 import pathlib
 import sys
 
-RAIZ = pathlib.Path(os.environ.get("CLAUDE_PROJECT_DIR")
+RAIZ = pathlib.Path(os.environ.get("CURSOR_PROJECT_DIR")
                    or pathlib.Path(__file__).resolve().parents[2]).resolve()
 LOCK_DIR = RAIZ / ".cursor/cache/ancoras"
 SUJOS = RAIZ / ".cursor/cache/dominios-sujos"

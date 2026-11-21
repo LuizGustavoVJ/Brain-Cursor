@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Hook Stop — fala em voz alta a resposta final do Claude Code.
+"""Hook Stop — fala em voz alta a resposta final do Cursor.
 
 100% local: piper (binario em ~/.local/opt/piper, voz pt_BR-cadu) -> ganho_audio.py -> aplay.
 Nada de audio ou texto sai da maquina por este caminho.
 
 Desligar sem mexer em configuracao:  touch ~/.cursor/voz-off
 Religar:                             rm ~/.cursor/voz-off
-Falar mais/menos texto:              export CLAUDE_VOZ_MAX_CHARS=2400 (padrão 1600)
-Mais devagar / mais rapido:          export CLAUDE_VOZ_LENGTH=0.95 (padrão 0.86)
-Voz mais grave / mais aguda:         export CLAUDE_VOZ_TOM=21600 (padrão 22400, 22050 = tom do modelo)
-Voz mais alta / mais baixa:          export CLAUDE_VOZ_GANHO=2.6 (padrão 2.0, 1.0 desliga)
-Fala mais firme / mais variada:      export CLAUDE_VOZ_NOISE_W=0.75 (padrão 0.88)
+Falar mais/menos texto:              export cursor_VOZ_MAX_CHARS=2400 (padrão 1600)
+Mais devagar / mais rapido:          export cursor_VOZ_LENGTH=0.95 (padrão 0.86)
+Voz mais grave / mais aguda:         export cursor_VOZ_TOM=21600 (padrão 22400, 22050 = tom do modelo)
+Voz mais alta / mais baixa:          export cursor_VOZ_GANHO=2.6 (padrão 2.0, 1.0 desliga)
+Fala mais firme / mais variada:      export cursor_VOZ_NOISE_W=0.75 (padrão 0.88)
 
 Registrado em ~/.cursor/settings.json como hook Stop com "async": true —
 nao bloqueia a conversa e nao consome token.
@@ -26,21 +26,21 @@ PIPER = os.path.join(HOME, ".local/opt/piper/piper")
 MODELO = os.path.join(HOME, ".local/share/piper-voices/pt_BR-cadu-medium.onnx")
 DESLIGADO = os.path.join(HOME, ".cursor/voz-off")
 PIDFILE = os.path.join(HOME, ".cursor/voz.pid")
-MAX_CHARS = int(os.environ.get("CLAUDE_VOZ_MAX_CHARS", "1600"))
+MAX_CHARS = int(os.environ.get("cursor_VOZ_MAX_CHARS", "1600"))
 GANHO = os.path.join(HOME, ".cursor/hooks/ganho_audio.py")
 
 # O modelo gera a 22050 Hz. Reproduzir um pouco abaixo baixa o tom (voz mais grave)
 # e alonga o audio na mesma proporcao — length_scale abaixo de 1 devolve o tempo.
 # 22400 fica 1,6% ACIMA dos 22050 do modelo: tom levemente mais fino e fala mais rapida.
-SAMPLE_RATE = os.environ.get("CLAUDE_VOZ_TOM", "22400")
+SAMPLE_RATE = os.environ.get("cursor_VOZ_TOM", "22400")
 
 # Cadencia e prosodia. length_scale > 1 fala mais devagar; noise_w e noise_scale
 # baixos deixam a fala mais firme (menos tremida), altos mais variada.
 # Nenhum deles muda o sotaque — sotaque e do dataset do modelo.
-LENGTH_SCALE = os.environ.get("CLAUDE_VOZ_LENGTH", "0.86")
-NOISE_W = os.environ.get("CLAUDE_VOZ_NOISE_W", "0.88")
-NOISE_SCALE = os.environ.get("CLAUDE_VOZ_NOISE", "0.70")
-SILENCIO_FRASE = os.environ.get("CLAUDE_VOZ_PAUSA", "0.18")
+LENGTH_SCALE = os.environ.get("cursor_VOZ_LENGTH", "0.86")
+NOISE_W = os.environ.get("cursor_VOZ_NOISE_W", "0.88")
+NOISE_SCALE = os.environ.get("cursor_VOZ_NOISE", "0.70")
+SILENCIO_FRASE = os.environ.get("cursor_VOZ_PAUSA", "0.18")
 
 
 def limpar(texto):

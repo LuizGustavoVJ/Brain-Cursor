@@ -24,7 +24,7 @@ e só quando o usuário pedir. Merge (de qualquer branch, inclusive mergear um M
 branch e aprovar/fechar MR são **sempre do usuário**, em todo repositório. Resolver conflito de MR
 = mergear a branch-alvo **na** branch de trabalho, resolver e dar push da branch de trabalho (nunca
 o inverso). No cit especificamente, `git merge` para escrever em `staging` é barrado pelo
-classificador de permissões e o `GITLAB_PERSONAL_ACCESS_TOKEN` de `~/.claude.json` é só leitura
+classificador de permissões e o `GITLAB_PERSONAL_ACCESS_TOKEN` de `~/.cursor/mcp.json` é só leitura
 (`403 insufficient_scope` em `POST /merge_requests`) — o caminho é entregar o link de criação do MR
 que o `git push` imprime. Depois que alguém mescla, **merge não é deploy**: conferir o job de
 `deploy to staging` (já falhou por espaço em disco no runner, deixando o site em HTTP 000).

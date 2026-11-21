@@ -15,7 +15,7 @@ com o que foi para os mapas `dominio-*`, ou "nada novo: <motivo>". Existe = dest
 
 Estado por sessao (nunca por repo — duas abas abertas nao se contaminam):
   .cursor/cache/sessao/<session_id>.json  {card, fase, faixa, cards, cobrados}
-A sessao vem do `session_id` do payload do hook; no Bash (fase.sh), de CLAUDE_CODE_SESSION_ID.
+A sessao vem do `session_id` do payload do hook; no Bash (fase.sh), de CURSOR_AGENT_SESSION_ID.
 
 Heuristica de numero de card (6 digitos) — so conta se vier em forma de card, para nao
 confundir CNPJ parcial, id de banco ou valor:
@@ -37,7 +37,7 @@ import re
 import sys
 import time
 
-RAIZ = pathlib.Path(os.environ.get("CLAUDE_PROJECT_DIR")
+RAIZ = pathlib.Path(os.environ.get("CURSOR_PROJECT_DIR")
                     or pathlib.Path(__file__).resolve().parents[2]).resolve()
 CACHE = RAIZ / ".cursor/cache/sessao"
 DESTILACOES = RAIZ / "docs/destilacoes"
@@ -210,7 +210,7 @@ def hook() -> int:
 
 
 def cli(args: list[str]) -> int:
-    sid = os.environ.get("CLAUDE_CODE_SESSION_ID") or os.environ.get("CLAUDE_SESSION_ID") or ""
+    sid = os.environ.get("CURSOR_AGENT_SESSION_ID") or os.environ.get("CURSOR_AGENT_SESSION_ID") or ""
     d = le(sid)
     acao = args[0] if args else "mostra"
     if acao == "limpa":
@@ -256,7 +256,7 @@ def cli(args: list[str]) -> int:
         print(f"Card {d['card'] or '(não declarado)'} · trilha {trilha_de(d)} · fase {etapa} — "
               f"orçamento {rotulo(etapa)}")
         if not sid:
-            print("aviso: sem CLAUDE_CODE_SESSION_ID — fase gravada fora de sessão", file=sys.stderr)
+            print("aviso: sem CURSOR_AGENT_SESSION_ID — fase gravada fora de sessão", file=sys.stderr)
         if alerta:
             print("\n" + alerta)
         if etapa in ENCERRAMENTO and d["card"] and not destilado(d["card"]):

@@ -1,7 +1,7 @@
 ---
 name: especialista-financeiro-cobranca
 description: Dinheiro e duplicidade — cobrança, vencimento, forma de pagamento, cartão e boleto, estorno, ganho, conciliação com ERP e gateway, e duas execuções que se cruzam (duplo clique, webhook reenviado, cron, retry, lock). Use em todo efeito financeiro ou repetível.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 ---
 # Especialista em financeiro e cobrança
 

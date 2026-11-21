@@ -16,8 +16,8 @@ Pior: o próprio texto do comando mandava "autorize em sessão interativa (`/mcp
 apontava para aquilo que ele mesmo bloqueava. Renomeado para **`/mcp-diag`** (comando removido na Fase 3 em 25/09 por falta de uso; a lição — não nomear comando igual a embutido — continua) (atalho no `AGENTS.md`
 atualizado, replicado nos 13 repos).
 
-Caminho direto para autorizar OAuth, sem depender de menu nenhum: **`claude mcp login <servidor>`**
-no terminal (existe também `claude mcp logout <servidor>`). Ver [[monitoramento-datadog-grafana]].
+Caminho direto para autorizar OAuth, sem depender de menu nenhum: **`cursor mcp oauth <servidor>`**
+no terminal (existe também `cursor mcp logout <servidor>`). Ver [[monitoramento-datadog-grafana]].
 
 **Why:** o sintoma ("não aparece a opção") aponta para o servidor, mas a causa está no Brain. Sem
 saber da regra de sombreamento, o diagnóstico vira caça ao fantasma do lado do conector.

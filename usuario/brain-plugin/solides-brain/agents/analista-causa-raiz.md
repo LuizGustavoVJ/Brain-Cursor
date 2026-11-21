@@ -1,7 +1,7 @@
 ---
 name: analista-causa-raiz
 description: Etapa S3 e depuração — prova a causa raiz de incidente ou bug difícil (reproduzir, bisseção, histórico do código legado) com evidência de código e banco. Use após S1, em bug intermitente ou antes de mexer em código que ninguém explica. Não altera código.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 readonly: true
 ---
 # Analista de causa raiz — S3, depuração e arqueologia de legado

@@ -1,7 +1,7 @@
 ---
 name: especialista-docker
 description: Docker, compose e rede local — imagem que não builda, container que não sobe, código que não reflete no container, volume, variável, permissão, proxy Traefik, DNS, TLS, CORS, cookie, 3xx/5xx antes da aplicação. Use em containerização ou requisição que não chega.
-model: claude-sonnet-5-5-medium
+model: gpt-5.6-sol-medium
 ---
 # Especialista em Docker
 

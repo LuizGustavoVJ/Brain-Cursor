@@ -45,7 +45,7 @@ especialista-aws	aws	recurso AWS no artefato: Lambda, S3, SQS/SNS, IAM, RDS, Clo
 especialista-aws	telemetria-custo	alarme, log ou métrica no CloudWatch, recurso cloud novo ou aumento de capacidade que gera fatura	-
 especialista-docker	rede	requisição que não chega, 3xx/timeout antes da aplicação, DNS, TLS, proxy ou porta	cmd:(dig|nslookup|traceroute|tcpdump|telnet|openssl\s+s_client)(\s|$)
 engenheiro-de-brain	mcp	servidor MCP: adicionar, mudar escopo, tool que não chega ao subagente, deny contra tool inexistente	path:(\.mcp\.json|scripts/mcp\.sh)$;;texto:mcp__[a-z-]+__
-engenheiro-de-brain	brain	mexer no núcleo, gate, hook, camada ou estrutura do Brain	path:^(CLAUDE\.md|\.cursor/(fluxo-completo|otimizacao-custos|README)\.md|\.cursor/settings\.json)$
+engenheiro-de-brain	brain	mexer no núcleo, gate, hook, camada ou estrutura do Brain	path:^(AGENTS\.md|\.cursor/(fluxo-completo|otimizacao-custos|README)\.md|\.cursor/settings\.json)$
 engenheiro-de-brain	agente	criar agente, mudar ferramenta, modelo, rodapé ou grupo de agente	novo:^\.cursor/agents/.*\.md$;;path:^\.cursor/frota/grupos\.tsv$
 engenheiro-de-brain	prompt	regra que o agente não obedeceu, instrução ambígua, ou comando de atalho novo	novo:^\.cursor/commands/.*\.md$
 engenheiro-de-brain	skill	criar/reorganizar skill, ou conhecimento que deveria carregar sob demanda e hoje não carrega	novo:^\.cursor/skills/.*/SKILL\.md$

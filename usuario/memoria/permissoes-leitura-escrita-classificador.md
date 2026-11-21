@@ -34,4 +34,4 @@ pode liberar por regra em `.cursor/settings.local.json` e, com o OK, escrever a 
 comando (regra genérica de diretório não vence o classificador) e executar — não terceirizar o
 comando de volta ao usuário.
 
-**Atualização 25/09/2026:** escrita no HubSpot (tools do MCP de projeto e do conector claude.ai) e no Grafana está em `ask` no `.cursor/settings.json` (propagado aos 14 repos), então a confirmação é da própria ferramenta. Postman fica sem `ask` de propósito, porque é etapa de todo card, no workspace do Luiz.
+**Atualização 25/09/2026:** escrita no HubSpot (tools do MCP de projeto e do conector cursor.com) e no Grafana está em `ask` no `.cursor/settings.json` (propagado aos 14 repos), então a confirmação é da própria ferramenta. Postman fica sem `ask` de propósito, porque é etapa de todo card, no workspace do Luiz.

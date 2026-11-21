@@ -1,7 +1,7 @@
 ---
 name: validador-tecnico
 description: Validação técnica com julgamento — análise (S4), plano.html (I2-val), código vs plano (I6), código + HTML de evidências (S6a-val, I11, I15). Veredito binário, teto de 3 rodadas e escalonamento ao usuário. Use nos gates de conteúdo; não altera o documento.
-model: claude-opus-5-5-high
+model: gpt-5.6-sol-high
 readonly: true
 ---
 # Validador técnico — S4, S6a-val, I2-val, I6, I11, I15
