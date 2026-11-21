@@ -2,8 +2,16 @@ name: Notify
 
 on:
   workflow_run:
-    workflows: [CI]
+    workflows:
+      - CI
+      - Auto-merge after CI
+      - Promote staging to main
+      - Post-merge verify and rollback
+      - Notify
     types: [completed]
+  pull_request:
+    types: [closed]
+    branches: [staging, main]
 
 permissions:
   actions: read
@@ -11,112 +19,217 @@ permissions:
   pull-requests: read
 
 jobs:
-  notify:
+  notify-workflow-run:
     runs-on: ubuntu-latest
     if: >-
-      ${{ github.event.workflow_run.event == 'pull_request' &&
-          github.event.workflow_run.conclusion != 'cancelled' }}
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.event != 'schedule'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolver PR e corpo
-        id: pr
+      - name: Resolver contexto (CI / falha de workflow)
+        id: meta
         uses: actions/github-script@v7
         with:
           script: |
             const run = context.payload.workflow_run;
-            const { owner, repo } = context.repo;
-            const pulls = await github.paginate(
-              github.rest.pulls.list,
-              { owner, repo, state: 'open', per_page: 100 }
-            );
-            const pr = pulls.find(p => p.head.sha === run.head_sha);
-            if (!pr) {
-              core.setFailed('Nenhum PR aberto com head_sha=' + run.head_sha);
-              return;
-            }
-            const full = await github.rest.pulls.get({
-              owner, repo, pull_number: pr.number,
-            });
-            core.setOutput('number', String(pr.number));
-            core.setOutput('title', pr.title);
-            core.setOutput('url', pr.html_url);
-            core.setOutput('branch', pr.head.ref);
-            const fs = require('fs');
-            fs.writeFileSync('pr-body.md', full.data.body || '');
-            core.setOutput('conclusion', run.conclusion);
+            const wf = run.name || 'workflow';
+            const conclusion = run.conclusion || 'unknown';
+            const failed = conclusion !== 'success';
+            const isCi = wf === 'CI';
+            const isPostMerge = wf === 'Post-merge verify and rollback';
+            core.setOutput('failed', failed ? '1' : '0');
+            core.setOutput('is_ci', isCi ? '1' : '0');
+            core.setOutput('is_post_merge', isPostMerge ? '1' : '0');
+            core.setOutput('workflow', wf);
+            core.setOutput('conclusion', conclusion);
+            core.setOutput('run_url', run.html_url);
 
-      - name: Montar contexto (card ADO, links)
+            let prNumber = '';
+            let prTitle = '';
+            let prUrl = '';
+            let branch = run.head_branch || '';
+            if (run.event === 'pull_request' || run.pull_requests?.length) {
+              const { owner, repo } = context.repo;
+              const pulls = await github.paginate(
+                github.rest.pulls.list,
+                { owner, repo, state: 'open', per_page: 100 }
+              );
+              let pr = pulls.find(p => p.head.sha === run.head_sha);
+              if (!pr && run.pull_requests?.[0]) {
+                pr = { number: run.pull_requests[0].number, title: '', html_url: run.pull_requests[0].url, head: { ref: branch } };
+              }
+              if (!pr) {
+                const closed = await github.paginate(
+                  github.rest.pulls.list,
+                  { owner, repo, state: 'closed', per_page: 30, sort: 'updated', direction: 'desc' }
+                );
+                pr = closed.find(p => p.head.sha === run.head_sha);
+              }
+              if (pr) {
+                prNumber = String(pr.number);
+                prTitle = pr.title || '';
+                prUrl = pr.html_url || '';
+                branch = pr.head?.ref || branch;
+              }
+            }
+            core.setOutput('pr_number', prNumber);
+            core.setOutput('pr_title', prTitle);
+            core.setOutput('pr_url', prUrl);
+            core.setOutput('branch', branch);
+            return 0;
+
+      - name: Card ADO (CI)
         id: ctx
-        if: steps.pr.outcome == 'success'
+        if: steps.meta.outputs.is_ci == '1' && steps.meta.outputs.pr_number != ''
         run: |
+          set -euo pipefail
+          NUM="${{ steps.meta.outputs.pr_number }}"
+          BODY=$(gh pr view "$NUM" --json body -q .body 2>/dev/null || echo "")
           python3 scripts/ci-extract-pr-context.py \
-            "${{ steps.pr.outputs.branch }}" \
-            "$(cat pr-body.md)" \
-            "${{ steps.pr.outputs.number }}" \
-            "${{ steps.pr.outputs.title }}" \
-            "${{ steps.pr.outputs.url }}" > /tmp/ctx.json
+            "${{ steps.meta.outputs.branch }}" \
+            "$BODY" \
+            "$NUM" \
+            "${{ steps.meta.outputs.pr_title }}" \
+            "${{ steps.meta.outputs.pr_url }}" > /tmp/ctx.json
           echo "card=$(jq -r .card /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
           echo "ado_url=$(jq -r .ado_url /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
-          echo "pr_title=$(jq -r .pr_title /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
 
-      - name: Assunto e corpo
+      - name: Montar mensagem
         id: mail
-        if: steps.pr.outcome == 'success'
         run: |
-          CONCLUSION="${{ steps.pr.outputs.conclusion }}"
-          if [ "$CONCLUSION" = "success" ]; then
-            SUBJECT="PR para aprovar — #${{ steps.pr.outputs.number }} (${{ steps.ctx.outputs.card }})"
-            INTRO="Os checks de CI passaram. A aprovação de Luiz está pendente no GitHub."
+          set -euo pipefail
+          FAILED="${{ steps.meta.outputs.failed }}"
+          IS_CI="${{ steps.meta.outputs.is_ci }}"
+          WF="${{ steps.meta.outputs.workflow }}"
+          CONCLUSION="${{ steps.meta.outputs.conclusion }}"
+          PRN="${{ steps.meta.outputs.pr_number }}"
+          BRANCH="${{ steps.meta.outputs.branch }}"
+          CARD="${{ steps.ctx.outputs.card }}"
+          [ -n "$CARD" ] || CARD="(branch)"
+          RUN_URL="${{ steps.meta.outputs.run_url }}"
+
+          if [ "$IS_CI" = "1" ]; then
+            if [ "$FAILED" = "1" ]; then
+              SUBJECT="[FALHA CI] PR #${PRN} — branch ${BRANCH} — ${CARD}"
+              INTRO="O CI falhou no repositório Brain-Cursor. Corrija a branch antes de novo merge automático."
+            else
+              SUBJECT="[CI OK] PR #${PRN} — merge automático em andamento — ${CARD}"
+              INTRO="Checks verdes. A esteira full-auto segue sem aprovação manual (/approve descontinuado)."
+            fi
+          elif [ "${{ steps.meta.outputs.is_post_merge }}" = "1" ]; then
+            if [ "$FAILED" = "1" ]; then
+              SUBJECT="[FALHA PÓS-MERGE] ${BRANCH} — rollback em andamento ou falhou"
+              INTRO="Gate pós-merge falhou. O workflow post-merge-verify tenta revert automático; confira o run."
+            else
+              echo "Pós-merge verde — promoção/main segue conforme workflows."
+              exit 0
+            fi
           else
-            SUBJECT="[FALHA CI] PR #${{ steps.pr.outputs.number }} — ${{ steps.ctx.outputs.card }}"
-            INTRO="O workflow CI falhou (conclusão: $CONCLUSION). Corrija antes de aprovar."
+            if [ "$FAILED" = "1" ]; then
+              SUBJECT="[ERRO WORKFLOW] ${WF} — conclusão ${CONCLUSION}"
+              INTRO="Falha na esteira automática (workflow: ${WF}). Verifique o run no GitHub Actions."
+            else
+              echo "Workflow ${WF} concluído com sucesso — sem e-mail (só alertas de merge/falha)."
+              exit 0
+            fi
+          fi
+
+          {
+            echo "$INTRO"
+            echo ""
+            echo "Repositório: ${{ github.repository }}"
+            echo "Workflow: $WF"
+            echo "Conclusão: $CONCLUSION"
+            [ -n "$PRN" ] && echo "PR #${PRN}: ${{ steps.meta.outputs.pr_url }}"
+            [ -n "$BRANCH" ] && echo "Branch: $BRANCH"
+            [ -n "${{ steps.ctx.outputs.ado_url }}" ] && echo "ADO: ${{ steps.ctx.outputs.ado_url }}"
+            echo "Run: $RUN_URL"
+          } > /tmp/notify-body.txt
+          echo "subject=$SUBJECT" >> "$GITHUB_OUTPUT"
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          cat /tmp/notify-body.txt >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enviar e-mail e Slack
+        if: steps.mail.outputs.subject != ''
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python3 scripts/send_notification.py \
+            "${{ steps.mail.outputs.subject }}" \
+            "${{ steps.mail.outputs.body }}"
+
+  notify-merge:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Contexto do merge
+        id: ctx
+        run: |
+          python3 scripts/ci-extract-pr-context.py \
+            "${{ github.event.pull_request.head.ref }}" \
+            "${{ github.event.pull_request.body }}" \
+            "${{ github.event.pull_request.number }}" \
+            "${{ github.event.pull_request.title }}" \
+            "${{ github.event.pull_request.html_url }}" > /tmp/ctx.json
+          echo "card=$(jq -r .card /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
+          echo "ado_url=$(jq -r .ado_url /tmp/ctx.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Mensagem de merge
+        id: mail
+        run: |
+          BASE="${{ github.event.pull_request.base.ref }}"
+          NUM="${{ github.event.pull_request.number }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          CARD="${{ steps.ctx.outputs.card }}"
+          if [ "$BASE" = "staging" ]; then
+            SUBJECT="[MERGE] PR #${NUM} integrado em staging — ${CARD}"
+            INTRO="Merge concluído em \`staging\`. Promoção para \`main\` segue via workflow promote-main."
+          elif [ "$BASE" = "main" ] && [ "$BRANCH" = "staging" ]; then
+            SUBJECT="[PROMOÇÃO] staging → main concluída — PR #${NUM}"
+            INTRO="Produção (\`main\`) atualizada a partir de \`staging\`."
+          else
+            SUBJECT="[MERGE] PR #${NUM} → ${BASE}"
+            INTRO="Merge concluído na branch \`${BASE}\`."
           fi
           {
             echo "$INTRO"
             echo ""
-            echo "Card: ${{ steps.ctx.outputs.card }}"
+            echo "PR #${NUM}: ${{ github.event.pull_request.html_url }}"
+            echo "Título: ${{ github.event.pull_request.title }}"
+            echo "Branch: ${BRANCH} → ${BASE}"
+            echo "Card: ${CARD}"
             echo "ADO: ${{ steps.ctx.outputs.ado_url }}"
-            echo "PR #${{ steps.pr.outputs.number }}: ${{ steps.pr.outputs.url }}"
-            echo "Título: ${{ steps.ctx.outputs.pr_title }}"
-            echo "Branch: ${{ steps.pr.outputs.branch }}"
-            echo "Run CI: ${{ github.event.workflow_run.html_url }}"
+            echo "Commit merge: ${{ github.event.pull_request.merge_commit_sha }}"
           } > /tmp/notify-body.txt
           echo "subject=$SUBJECT" >> "$GITHUB_OUTPUT"
           echo "body<<EOF" >> "$GITHUB_OUTPUT"
           cat /tmp/notify-body.txt >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
-      - name: E-mail (SMTP)
-        if: steps.pr.outcome == 'success'
+      - name: Enviar e-mail e Slack
         env:
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-        uses: dawidd6/action-send-mail@v3
-        continue-on-error: true
-        with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: ${{ steps.mail.outputs.subject }}
-          to: ${{ secrets.NOTIFY_EMAIL_TO }}
-          from: ${{ secrets.SMTP_FROM }}
-          body: ${{ steps.mail.outputs.body }}
-          secure: true
-
-      - name: Slack (webhook)
-        if: steps.pr.outcome == 'success'
-        env:
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          if [ -z "$SLACK_WEBHOOK_URL" ]; then
-            echo "SLACK_WEBHOOK_URL não configurado — veja docs/operacao-repositorio.md"
-            exit 0
-          fi
-          payload=$(jq -n \
-            --arg text "${{ steps.mail.outputs.subject }}
-
-${{ steps.mail.outputs.body }}" \
-            '{text: $text}')
-          curl -fsS -X POST -H 'Content-type: application/json' \
-            --data "$payload" "$SLACK_WEBHOOK_URL"
+          python3 scripts/send_notification.py \
+            "${{ steps.mail.outputs.subject }}" \
+            "${{ steps.mail.outputs.body }}"

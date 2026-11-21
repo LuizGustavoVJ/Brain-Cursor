@@ -1,0 +1,106 @@
+name: Post-merge verify and rollback
+
+on:
+  push:
+    branches: [staging, main]
+
+concurrency:
+  group: post-merge-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    name: lint-and-test-pos-merge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint
+        run: bash scripts/ci-lint.sh
+      - name: Test
+        run: bash scripts/ci-test.sh
+
+  rollback:
+    needs: verify
+    if: >-
+      needs.verify.result == 'failure' &&
+      !startsWith(github.event.head_commit.message, 'ci-rollback:')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Reverter último commit em ${{ github.ref_name }}
+        id: revert
+        run: |
+          set -euo pipefail
+          BRANCH="${{ github.ref_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          PARENTS=$(git rev-list --parents -n 1 HEAD | awk '{print NF}')
+          if [ "$PARENTS" -gt 2 ]; then
+            git revert -m 1 HEAD --no-edit
+          else
+            git revert HEAD --no-edit
+          fi
+          git commit --amend -m "ci-rollback: falha pós-merge em ${BRANCH} — revert automático"
+          NEW_SHA=$(git rev-parse HEAD)
+          echo "sha=$NEW_SHA" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:refs/heads/${BRANCH}"
+
+      - name: Alerta rollback (e-mail + Slack)
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          SUBJECT="[ROLLBACK] CI pós-merge falhou em ${BRANCH} — revert executado"
+          BODY=$(cat <<EOF
+          O gate pós-merge (lint/test) falhou após integração em \`${BRANCH}\`.
+          A esteira reverteu automaticamente o último commit (merge ou push).
+
+          Branch: ${BRANCH}
+          Commit revertido: ${{ github.sha }}
+          Novo HEAD: ${{ steps.revert.outputs.sha }}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Limites: rollback cobre só este repositório — não desfaz deploy externo, dados em banco ou integrações já disparadas.
+          Ver docs/esteira-full-auto.md e gestor-de-risco (Brain).
+          EOF
+          )
+          python3 scripts/send_notification.py "$SUBJECT" "$BODY"
+
+  alert-rollback-still-red:
+    needs: verify
+    if: >-
+      needs.verify.result == 'failure' &&
+      startsWith(github.event.head_commit.message, 'ci-rollback:')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Alerta crítico (sem segundo rollback)
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          SUBJECT="[CRÍTICO] ${{ github.ref_name }} ainda vermelho após rollback automático"
+          BODY="CI pós-merge falhou em um commit de rollback — intervenção manual necessária.
+
+          Branch: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          python3 scripts/send_notification.py "$SUBJECT" "$BODY"
