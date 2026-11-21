@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_card.py\""
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_dominio.py\""
+      }
+    ],
+    "postToolUse": [
+      {
+        "matcher": "Write",
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_dominio.py\""
+      },
+      {
+        "matcher": "Write",
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_gatilhos.py\""
+      },
+      {
+        "matcher": "Shell",
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_gatilhos.py\""
+      },
+      {
+        "matcher": "Task",
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_gatilhos.py\""
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_dominio.py\""
+      },
+      {
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_gatilhos.py\""
+      },
+      {
+        "command": "python3 \"${CURSOR_PLUGIN_ROOT}/scripts/hook_card.py\""
+      }
+    ]
+  }
+}

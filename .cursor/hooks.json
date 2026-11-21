@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"beforeSubmitPrompt\", \"additionalContext\": \"LEMBRETE: ADO: pergunte antes de CADA postagem. Git commit/push só com OK explícito na mensagem atual.\"}}'"
+      },
+      {
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_contexto.py\""
+      },
+      {
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_card.py\""
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_dominio.py\""
+      }
+    ],
+    "postToolUse": [
+      {
+        "matcher": "Shell",
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_pos_testes.py\""
+      },
+      {
+        "matcher": "Shell",
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_contexto.py\""
+      },
+      {
+        "matcher": "Shell",
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_gatilhos.py\""
+      },
+      {
+        "matcher": "Write",
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_dominio.py\""
+      },
+      {
+        "matcher": "Write",
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_gatilhos.py\""
+      },
+      {
+        "matcher": "Task",
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_gatilhos.py\""
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_dominio.py\""
+      },
+      {
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_gatilhos.py\""
+      },
+      {
+        "command": "python3 \"${CURSOR_PROJECT_DIR:-.}/.cursor/scripts/hook_card.py\""
+      }
+    ]
+  }
+}

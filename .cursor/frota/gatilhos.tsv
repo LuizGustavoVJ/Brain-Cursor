@@ -1,0 +1,69 @@
+# Gatilhos de especialista — FONTE ÚNICA (dados). Prosa e mecanismo: gatilhos.md
+#
+# O gatilho é por ARTEFATO, não por etapa: bateu a condição, o especialista entra ANTES de o
+# artefato sair — em qualquer etapa do fluxo E em pedido avulso fora de card.
+#
+# Colunas (TAB):  agente  classe  condicao  deteccao
+#
+# deteccao = tokens separados por ';;' — o hook_gatilhos.py casa QUALQUER um deles:
+#   path:RE    caminho relativo do arquivo escrito/editado
+#   novo:RE    idem, mas só em Write (arquivo novo)
+#   texto:RE   conteúdo escrito em arquivo de CÓDIGO (nunca em docs/, .md, .txt, .html de documento)
+#   doc:RE     conteúdo escrito em DOCUMENTO (docs/, .md, .txt, .html) ou fora do repo — só forma
+#              inequívoca (SQL no início de linha, bloco ```sql, DDL); palavra solta não dispara
+#   cmd:RE     casado no INÍCIO de cada comando da linha (re.match, case-sensitive, sem heredoc,
+#              quebrado em ; && || | e quebra de linha) — `grep "git push"` não é `git push`
+#   grande:N   filtro E: só vale se o arquivo tiver mais de N linhas
+#   -          sem detecção mecânica; a condição é objetiva e quem declara é o agente
+# Regex Python: path/novo/texto/doc com IGNORECASE|DOTALL; cmd sem flags. Não use TAB nem ';;' no regex.
+#
+# Alguns regexes citam coisa deste repo (homol.sh, CMOVIMENTOS). propagar.sh copia verbatim —
+# regex morto nao quebra nada; gerar_plugin.py generaliza esses trechos antes de empacotar.
+# Classes sem artefato em nenhum repo foram retiradas na Fase 3 (k8s, iac, llm-produto, a11y,
+# design-system, telemetria por palavra) — rastreio em docs/analises/brain/rastreio-fase3.md.
+# Render: .cursor/scripts/frota.sh gatilhos [termo]   ·   integridade: frota.sh lint
+especialista-sql	sql	consulta SQL que vá ser executada, colada em documento ou entregue ao usuário — passa por ele ANTES de sair	path:\.sql$;;texto:(\bselect\b.{0,3000}?\bfrom\b|\binsert\s+into\b|\bupdate\b[^;]{0,300}?\bset\b|\bdelete\s+from\b|\bset\s+@\w+\s*:?=);;doc:(```sql|(^|\n)[ \t]*(select\s[^\n]*(\n[^\n]*){0,40}?\bfrom\b|insert\s+into\b|update\s+[`\w.]+\s+set\b|delete\s+from\b));;cmd:(mysql\b|docker\s+(compose\s+)?exec\b.*\bmysql\b|(bash\s+)?\S*homol\.sh\s+(select|update)\b)
+especialista-sql	schema	criar/alterar tabela, coluna, índice, FK ou migration sobre dado existente	path:(^|/)migrations/.*\.sql$;;texto:(\bcreate\s+table\b|\balter\s+table\b|\badd\s+column\b|\bdrop\s+column\b|\bcreate\s+(unique\s+)?index\b|\bforeign\s+key\b);;doc:(^|\n)[ \t]*(create\s+table|alter\s+table|create\s+(unique\s+)?index)\b
+especialista-sql	bigquery	consulta, custo, particionamento ou schema no BigQuery	texto:(bigquery|\bbq\s+query\b|`[a-z0-9_-]+\.[a-z0-9_]+\.[a-z0-9_]+`);;cmd:bq\s+(query|show|ls)\b
+especialista-sql	pipeline-dados	carga, sincronização, ETL ou reprocessamento entre bases	texto:(\betl\b|pipeline de dados|carga incremental|airflow|\bdbt\b|datalake|reprocessa);;cmd:mysqldump\b
+especialista-sql	metrica	número, contagem ou métrica que vai para documento, card ou decisão do usuário — a definição do indicador é conferida antes de publicar	-
+especialista-php-legado	legado	editar arquivo PHP com mais de 500 linhas ou sem teste	path:\.php$;;grande:500
+especialista-integracao	contrato-http	criar/alterar endpoint, payload, status HTTP, versionamento ou autenticação de API	path:(config/routes\.php|(^|/)controllers/.*\.php|(^|/)routes/.*\.php)$;;texto:(json_encode\s*\(|http_response_code\s*\(|header\s*\(\s*.Content-Type)
+especialista-integracao	terceiro	chamada a sistema de terceiro: timeout, retry, idempotência, contrato de payload	texto:(pagar\.?me|hubspot|\bomie\b|curl_setopt|guzzle|file_get_contents\s*\(\s*.https?://|\bwebhook\b)
+especialista-financeiro-cobranca	concorrencia	efeito que pode ocorrer duas vezes: webhook, job, cron, retry, transação, lock	texto:(\bwebhook\b|\bcron\b|\bqueue\b|\bjob\b|start\s+transaction|begin\s+transaction|for\s+update\b|lock\s+tables)
+especialista-financeiro-cobranca	dinheiro	cálculo, cobrança, ganho, desconto, estorno — qualquer efeito em dinheiro	texto:(valor_|\bpreco\b|desconto|adesao|cobranc|fatura|boleto|cart(a|ã)o de cr|CMOVIMENTOS|mensalidade|estorno|reembolso)
+especialista-seguranca	dado-sensivel	dado pessoal, credencial, token, cartão, sessão ou autenticação no artefato	texto:(\btoken\b|senha|password|secret|api_key|credencial|\bcpf\b|\bcnpj\b|\bjwt\b|password_hash|\bsession\b)
+especialista-seguranca	exposicao	rota pública, segredo novo, CORS, whitelist, ambiente de cartão (PCI) — superfície exposta	path:(\.env(\.example|\.sample)?$|config/routes\.php$);;texto:(rota p(u|ú)blica|sem autentica|allow_origin|\bcors\b|whitelist|is_public|Access-Control)
+revisor-codigo	diff-grande	diff acima de 200 linhas, ou 5+ arquivos tocados no mesmo passo — medida objetiva: git diff --stat	-
+testador	teste	criar/alterar cenário de teste, ou fechar a matriz de teste do plano	path:(^|/)testes?/.*\.(spec|test)\.(js|ts|mjs)$;;path:(^|/)tests?/.*\.(spec|test)\.(js|ts|php)$
+especialista-sql	performance	consulta dentro de laço, tabela acima de 1M linhas, endpoint em rota quente, ou tempo de resposta citado no card	-
+gestor-de-risco	irreversivel	passo irreversível, ordem entre repositórios ou janela de deploy	texto:(drop\s+table|truncate\s+table|\bdeploy\b|rollback|migra(ç|c)(ã|a)o em produ)
+especialista-git	git-arvore	comando que altera árvore ou histórico, estratégia de branch, conflito de merge	cmd:git\s+(-C\s+\S+\s+)?(commit|push|merge|rebase|cherry-pick|reset|revert|checkout)\b
+especialista-git	pipeline-ci	criar/alterar pipeline, job, runner, cache ou segredo de CI	path:(\.gitlab-ci\.ya?ml|\.github/workflows/.*\.ya?ml|Jenkinsfile|bitbucket-pipelines\.ya?ml)$
+especialista-docker	container	Dockerfile, compose, imagem ou container que não sobe	path:(Dockerfile[^/]*|docker-compose[^/]*\.ya?ml|\.dockerignore)$;;cmd:docker\s+(build|run|compose\s+(\S+\s+)*?(up|build))\b
+especialista-aws	aws	recurso AWS no artefato: Lambda, S3, SQS/SNS, IAM, RDS, CloudFront, Secrets Manager	texto:(\blambda\b|s3://|\bsqs\b|\bsns\b|dynamodb|cloudfront|secrets\s?manager|\biam\b|\brds\b);;cmd:aws\s+[a-z0-9-]+\s
+especialista-aws	telemetria-custo	alarme, log ou métrica no CloudWatch, recurso cloud novo ou aumento de capacidade que gera fatura	-
+especialista-docker	rede	requisição que não chega, 3xx/timeout antes da aplicação, DNS, TLS, proxy ou porta	cmd:(dig|nslookup|traceroute|tcpdump|telnet|openssl\s+s_client)(\s|$)
+engenheiro-de-brain	mcp	servidor MCP: adicionar, mudar escopo, tool que não chega ao subagente, deny contra tool inexistente	path:(\.mcp\.json|scripts/mcp\.sh)$;;texto:mcp__[a-z-]+__
+engenheiro-de-brain	brain	mexer no núcleo, gate, hook, camada ou estrutura do Brain	path:^(CLAUDE\.md|\.cursor/(fluxo-completo|otimizacao-custos|README)\.md|\.cursor/settings\.json)$
+engenheiro-de-brain	agente	criar agente, mudar ferramenta, modelo, rodapé ou grupo de agente	novo:^\.cursor/agents/.*\.md$;;path:^\.cursor/frota/grupos\.tsv$
+engenheiro-de-brain	prompt	regra que o agente não obedeceu, instrução ambígua, ou comando de atalho novo	novo:^\.cursor/commands/.*\.md$
+engenheiro-de-brain	skill	criar/reorganizar skill, ou conhecimento que deveria carregar sob demanda e hoje não carrega	novo:^\.cursor/skills/.*/SKILL\.md$
+engenheiro-de-brain	contexto	medidor pediu /compact duas vezes na mesma aba, ou a etapa está relendo o mesmo arquivo	-
+especialista-postman	postman	criar/alterar collection, environment ou workspace no Postman, ou subir constante/segredo ao Postman	texto:mcp__postman__;;cmd:curl\b.*(api\.getpostman\.com|api\.eu\.postman\.com)
+pesquisador-web	fonte-oficial	afirmação sobre API, biblioteca ou serviço de terceiro sem documentação oficial citada	-
+pesquisador-web	decisao-tecnica	escolha entre duas ou mais alternativas técnicas com impacto em arquitetura, custo ou contrato	-
+analista-causa-raiz	codigo-sem-dono	código cuja razão de existir ninguém explica e que git log não resolve na primeira tentativa	-
+especialista-seguranca	dependencia	dependência adicionada ou atualizada, CVE, versão sem suporte	path:(composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|requirements\.txt|Gemfile(\.lock)?|go\.mod)$;;cmd:(composer\s+(require|update)|npm\s+(install|update|audit)|pip3?\s+install)\b
+pesquisador-web	documento-longo	documento de terceiro com mais de ~2.000 linhas ou ~30 páginas para ler e citar	-
+redator-tecnico	contrato-publicado	contrato público novo ou alterado que vai ser publicado (OpenAPI/Swagger, README de API)	path:(openapi|swagger)[^/]*\.(ya?ml|json)$
+redator-tecnico	texto-para-humano	runbook, comunicado, changelog ou handoff que outro time vai ler sem contexto	-
+destilador-dominio	acervo	documento novo em docs/ fora das pastas padrão do card — indexar em docs/INDICE.md e conferir se já não existe duplicata	novo:^docs/(?!fluxos/|analises/|implementacoes/|evidencias/|destilacoes/|INDICE)[^\n]*\.md$
+especialista-ux	tela	tela, formulário ou mensagem ao usuário que o card pede para revisar — só por pedido, sem cobrança automática	-
+especialista-php-legado	frontend	JS, CSS ou view alterada	path:\.(js|jsx|ts|tsx|vue|css|scss|less)$;;path:(^|/)views?/.*\.(php|html|twig)$
+revisor-arquitetura	multi-sistema	o artefato atravessa dois ou mais sistemas/repositórios, ou cria contrato entre serviços	-
+arquiteto-plano	mudanca-grande	passo do plano que toca 5+ arquivos, ou arquivo que cresce mais de 400 linhas no mesmo card	-
+analista-causa-raiz	bug-nao-isolado	causa não isolada depois de duas tentativas, comportamento intermitente ou "funciona na minha máquina"	-
+levantador-requisitos	regra-ambigua	card sem critério de aceite, regra de negócio ambígua, ou resposta que depende de premissa não escrita	-
+revisor-regra-negocio	regra-implementada	código que implementa elegibilidade, cálculo, prazo ou exceção de negócio — confere contra o card	-
+revisor-arquitetura	fluxo-existente	o artefato altera fluxo existente de pagamento, ganho ou integração (agente de fluxo, comando /arquitetura)	-

@@ -6,3 +6,9 @@ package.json
 package-lock.json
 _mail-debug.png
 brain-cursor/
+# Brain / Cursor local
+.cursor/cache/
+.cursor/settings.local.json
+usuario/.cursor/settings.local.json
+.env
+*.pyc
