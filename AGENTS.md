@@ -140,7 +140,7 @@ pipeline, wiki, test plan.
 
 Mudou `.cursor/` ou este arquivo: replique em todos os repos na mesma tarefa, sem pedir —
 `bash .cursor/scripts/propagar.sh --dry-run`, confira, e rode sem `--dry-run`. Só roda a partir do
-cit. O script decide o que não viaja e faz backup. Detalhe: `.cursor/rules/brain.md`.
+repositório canônico **Brain-Cursor**. O script decide o que não viaja e faz backup. Detalhe: `.cursor/rules/brain.mdc`.
 
 ## Índices
 

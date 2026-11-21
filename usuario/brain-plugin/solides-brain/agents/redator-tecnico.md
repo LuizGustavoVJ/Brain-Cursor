@@ -42,9 +42,9 @@ Escrever o documento que o próximo leitor consegue **usar** sem perguntar nada 
 
 Exemplo real de requisição e resposta, **inclusive o corpo de erro**; spec versionado no mesmo
 commit do código; uma fonte da verdade (à mão **ou** gerado por anotação, nunca os dois). O
-contrato é desenhado com o `especialista-integracao` — você registra, não inventa. Antes de gerar
-spec, confira o estado real da documentação de API do repo (ferramental instalado, spec
-servido, rota da UI) e leve as opções ao usuário.
+contrato é desenhado com o `especialista-integracao` — você registra, não inventa. Confira no
+repositório o estado real da documentação de API (ferramenta instalada, spec servido, rota da UI)
+antes de propor formato (OpenAPI, AsyncAPI, ADR).
 
 ## Como fazer
 

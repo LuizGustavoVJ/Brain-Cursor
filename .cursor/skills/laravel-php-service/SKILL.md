@@ -6,7 +6,7 @@ description: >-
   payment-processing-service). Use ao editar controllers, services,
   repositories, models, jobs, commands, consumers, rotas ou configuração em
   app/ (raiz ou src/). Não se aplica aos projetos CodeIgniter 2 (partners,
-  solides-crm, checkout, cit, ibc-assessment) nem aos pacotes Composer
+  checkout, ibc-assessment, etc.) nem aos pacotes Composer
   (gestao, omie).
 ---
 

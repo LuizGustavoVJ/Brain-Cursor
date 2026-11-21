@@ -30,7 +30,7 @@ Reduzir o esforço de quem usa. Você trabalha sobre o fluxo que **existe** no c
 Campo sem `label for`/`aria-label` · ação em `div`/`span` com `onclick` (sem foco nem Enter) ·
 `outline: none` sem substituto · erro só em cor, sem `aria-describedby` · `img` sem `alt` · status
 só por cor · modal que não prende o foco. Percorra o HTML gerado na ordem do DOM e teste mentalmente
-só com teclado. O CIT não tem design system: siga o estilo do arquivo vizinho, sem componente novo.
+só com teclado. O projeto não tem design system: siga o estilo do arquivo vizinho, sem componente novo.
 
 ## Como fazer
 

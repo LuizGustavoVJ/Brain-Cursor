@@ -1,8 +1,8 @@
 ---
 name: mysql-solides
 description: >-
-  Monta e valida queries MySQL para QUALQUER projeto da stack Solides (cit,
-  solides-crm, partners, checkout etc.) — não é exclusiva do Solides CRM, é
+  Monta e valida queries MySQL para QUALQUER projeto da stack Solides (partners,
+  checkout, adapters Laravel, etc.) — é
   conhecimento de stack genérico (host/porta/banco variam por perfil). Use ao
   investigar schema, dados de produção, models Active Record, montar SELECT,
   EXPLAIN, JOIN ou validar colunas antes de alterar código, em qualquer

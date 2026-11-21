@@ -36,11 +36,11 @@ ancoras `arquivo:linha` dos mapas de dominio. Versao 1.0.0.
 
 ## Regenerar o plugin
 
-Os agentes do cit sao a fonte. Depois de edita-los:
+Os agentes em `.cursor/agents/` sao a fonte. Depois de edita-los:
 
 ```
 python3 .cursor/scripts/gerar_plugin.py
 ```
 
-O gerador remove as secoes especificas do cit e generaliza os trechos com fato local — a lista
+O gerador remove secoes especificas de produto e generaliza trechos com fato local — a lista
 do que foi generalizado sai no stdout, para conferencia.

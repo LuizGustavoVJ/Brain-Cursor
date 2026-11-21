@@ -3,7 +3,7 @@
 #
 # Por que existe: o Brain genérico (frota, comandos, scripts, hooks, regras) tem de ser o
 # MESMO em todo repo — versão diferente por repo é a falha de fonte única em forma de pasta:
-# o agente obedece uma regra no cit e outra no gestao, e ninguém percebe até dar ruim.
+# o agente obedece uma regra num repo e outra noutro, e ninguém percebe até dar ruim.
 # Regra do usuário (21/08/2026): toda alteração em .cursor/ ou no AGENTS.md é replicada em
 # todos os repositórios, sem pedir permissão.
 #
@@ -12,30 +12,37 @@
 #   - .cursor/skills/dominio-*        (mapa de domínio é do negócio daquele repo)
 #   - .cursor/settings.local.json     (permissões locais da máquina/repo)
 #   - .cursor/cache/, *.lock, .mcp.json, __pycache__
-#   - scripts/homol.sh                (endpoint de execução controlada é do CIT)
+#   - scripts/homol.sh, scripts/local.sh  (automação específica de um produto, se existir)
 #   - o que o destino declarar em .cursor/proprio.txt (um caminho ou glob por linha,
 #     relativo a .cursor/ — ex.: skills/powerbi-relatorios, scripts/relatorio_*.py,
 #     agents/meu-agente.md, commands/meu-comando.md, frota/*.local.md). Vale também DENTRO de
 #     agents/ commands/ frota/ rules/ sustentacao/ implementacao/ scripts/ e skills/: o rsync recebe
 #     --exclude e nem sobrescreve nem apaga o que é do destino.
 #
-# ORIGEM ÚNICA: só roda a partir do cit. Rodado de outro repo, o "Brain" daquele repo viraria a
-# origem e sobrescreveria (e podaria) o cit e todos os outros — a fonte única ao contrário.
+# ORIGEM ÚNICA: só roda a partir do repositório canônico Brain-Cursor. Rodado de outro repo, o
+# "Brain" daquele repo viraria a origem e sobrescreveria os demais — a fonte única ao contrário.
 #
 # PODA (o que o destino perde): o que saiu da origem sai do destino. Sem isso, arquivo ou
 # pasta apagada aqui SOBREVIVE nos outros repos e o agente passa a obedecer a versão morta —
 # exatamente o defeito que a fonte única existe para matar. Aconteceu em 21/08/2026: a pasta
-# .cursor/rules foi apagada no cit e continuou viva em 12 repos, com a regra nova ao lado.
+# .cursor/rules foi apagada na origem e continuou viva em vários repos, com a regra nova ao lado.
 # Antes de escrever ou apagar, backup datado em ~/backups-brain/.
 #
 # Uso:  bash .cursor/scripts/propagar.sh [--dry-run] [repo ...]
 set -uo pipefail
 
 ORIGEM="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-ORIGEM_OFICIAL="/var/www/html/cit"   # sem barra final: a troca de caminho abaixo não o reescreve
-if [ "$ORIGEM" != "$ORIGEM_OFICIAL" ]; then
-  echo "propagar.sh: recusado — a origem do Brain é $ORIGEM_OFICIAL, não $ORIGEM." >&2
-  echo "Edite o Brain no cit e rode de lá: bash $ORIGEM_OFICIAL/.cursor/scripts/propagar.sh" >&2
+# Repositório canônico: LuizGustavoVJ/Brain-Cursor (override: BRAIN_CANONICO_ROOT=/caminho)
+ORIGEM_OFICIAL="${BRAIN_CANONICO_ROOT:-}"
+if [ -z "$ORIGEM_OFICIAL" ]; then
+  remote="$(git -C "$ORIGEM" remote get-url origin 2>/dev/null || true)"
+  case "$remote" in
+    *Brain-Cursor*|*brain-cursor*) ORIGEM_OFICIAL="$ORIGEM" ;;
+  esac
+fi
+if [ -z "$ORIGEM_OFICIAL" ] || [ "$ORIGEM" != "$ORIGEM_OFICIAL" ]; then
+  echo "propagar.sh: recusado — a origem do Brain é o repositório canônico Brain-Cursor, não $ORIGEM." >&2
+  echo "Clone LuizGustavoVJ/Brain-Cursor ou exporte BRAIN_CANONICO_ROOT apontando para ele." >&2
   exit 3
 fi
 NOME_ORIGEM="$(basename "$ORIGEM")"
@@ -225,7 +232,7 @@ PERFIL
   done
 
   # ---- perfil de OUTRO projeto não pode morar aqui: URL/porta/banco errados sobem o ambiente
-  #      errado. Já aconteceu (perfil do cit em 8 repos, herdado de cópia antiga do .cursor).
+  #      errado. Já aconteceu (perfil do repo em 8 repos, herdado de cópia antiga do .cursor).
   intrusos=0
   for a in "$dest/.cursor/arquitetura"/*.md; do
     [ -f "$a" ] || continue

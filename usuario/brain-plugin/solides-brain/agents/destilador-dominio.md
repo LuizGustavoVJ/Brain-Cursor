@@ -45,7 +45,7 @@ Você indexa e sinaliza — não reescreve conteúdo técnico de outro autor.
 ## Memória do projeto
 
 Fato que vale para além do tema (ambiente, decisão de processo, restrição de infra) vai para a
-memória do projeto em o diretório de memória do projeto, um arquivo por fato, com
+memória do projeto no diretório de memória do Cursor para aquele workspace, um arquivo por fato, com
 o ponteiro de uma linha em `MEMORY.md`. Antes de criar, procure o arquivo que já cobre aquilo
 e atualize-o — duplicata em memória é pior que ausência.
 

@@ -25,7 +25,6 @@
       "Bash(.cursor/scripts/resumo_testes.sh:*)",
       "Bash(.cursor/scripts/fase.sh:*)",
       "Bash(.cursor/scripts/kb.sh:*)",
-      "Bash(.cursor/scripts/local.sh:*)",
       "Bash(.cursor/scripts/relatorio_semanal.sh:*)",
       "Bash(python3 .cursor/scripts/cache_validacao.py:*)",
       "Bash(python3 .cursor/scripts/relatorio_custos.py:*)",
@@ -36,7 +35,6 @@
       "Bash(.cursor/scripts/frota.sh:*)",
       "Bash(bash .cursor/scripts/frota.sh:*)",
       "Bash(bash .cursor/scripts/brain_status.sh:*)",
-      "Bash(bash .cursor/scripts/local.sh:*)",
       "mcp__azure-devops__wit_work_item",
       "mcp__azure-devops__search_workitem",
       "mcp__azure-devops__wit_query",
@@ -61,9 +59,7 @@
       "mcp__gitlab__get_file_contents",
       "mcp__gitlab__validate_project_ci_lint",
       "Bash(.cursor/scripts/mcp.sh:*)",
-      "Bash(bash .cursor/scripts/mcp.sh:*)",
-      "Bash(.cursor/scripts/homol.sh:*)",
-      "Bash(bash .cursor/scripts/homol.sh:*)"
+      "Bash(bash .cursor/scripts/mcp.sh:*)"
     ],
     "deny": [
       "mcp__azure-devops__wit_work_item_attachment",
@@ -83,7 +79,7 @@
     ],
     "ask": [
       "Bash(python3 .cursor/scripts/ado_update_comment.py:*)",
-      "Bash(python3 /var/www/html/cit/.cursor/scripts/ado_update_comment.py:*)",
+      "Bash(python3 <repo-de-produto>/.cursor/scripts/ado_update_comment.py:*)",
       "Bash(ADO_PROJECT=* python3 .cursor/scripts/ado_update_comment.py:*)",
       "mcp__azure-devops__wit_work_item_comment_write",
       "mcp__legacy_docs__batch",

@@ -23,7 +23,7 @@ description: >-
 
 **Nota:** não há módulo dedicado a **webhooks** no repo. Callbacks e integrações usam **curl/POST** em libraries ou controllers.
 
-## Libraries e helpers existentes (confirmado no cit)
+## Libraries e helpers existentes (exemplo em projetos CI3)
 
 | Arquivo | Uso |
 |---------|-----|
@@ -33,9 +33,9 @@ description: >-
 | `application/libraries/Financeiro_lib.php` | Baixa de movimento financeiro (ver "APIs financeiras" abaixo) |
 | `application/models/Superlogica_updates_model.php` | Baixa de pagamento via Superlógica (ver "APIs financeiras" abaixo) |
 
-**Não existem no cit** (não usar como exemplo): `Cnpja.php`, `envio_email_helper.php`,
+**Podem não existir no repo atual** (validar antes de usar como exemplo): `Cnpja.php`, `envio_email_helper.php`,
 `application/libraries/Services/AlterarCliente/` — validado por `find`/`grep` vazios em 2026-09-25.
-Se outro repositório da frota tiver uma dessas libraries, a referência é daquele projeto, não do cit.
+Se outro repositório da frota tiver uma dessas libraries, a referência é daquele projeto, não do repo.
 
 ## Padrão CNPJá (função `get_info_cnpj()`)
 
@@ -82,26 +82,26 @@ enviar_email([
   definição em `app_helper.php:2322` — mesma assinatura, checar qual autoload está ativo antes de
   editar as duas)
 - Controllers não chamam `curl_init()` diretamente — a chamada HTTP sempre passa por library ou
-  helper; não citar `perfilbk.php` como exemplo (arquivo não existe no cit)
+  helper; validar nomes de helpers no autoload do projeto
 
 ## APIs financeiras (baixa automática de movimento)
 
-Não existe `modelmovimentos` nem `$this->SESS_IDEMP` no cit (grep vazio) — são dois pontos reais,
-em arquivos diferentes, que marcam a baixa como automática antes de repassá-la ao CRM legado
-(`solides-crm`, outro repositório):
+Não existe `modelmovimentos` nem `$this->SESS_IDEMP` no repo (grep vazio) — são dois pontos reais,
+em arquivos diferentes, que marcam a baixa como automática antes de repassá-la ao sistema legado
+(`repo-php-legado`, outro repositório):
 
 - **Omie:** `Financeiro_lib::entrega_mrr_old()` seta `$movimento['apiomie'] = true` e faz `curl` POST
-  do array inteiro (`http_build_query`) para `financeiro/movimentos/edit/{ID}` no CRM —
+  do array inteiro (`http_build_query`) para o endpoint de movimentos no sistema legado —
   [`Financeiro_lib.php:1974`](../../../application/libraries/Financeiro_lib.php#L1974).
 - **Superlógica:** `Superlogica_updates_model::registra_baixa_pagamento()` seta
   `$movimento['apisuperlogica'] = 1` na mesma lógica de baixa —
   [`Superlogica_updates_model.php:29`](../../../application/models/Superlogica_updates_model.php#L29).
-- O que essas duas flags **desbloqueiam do lado do CRM** (checagem de `SESS_IDEMP` em
-  `solides-crm/application/libraries/Usuarios.php` e afins) é código de **outro repositório** —
-  não deduzir o comportamento aqui sem ler o `solides-crm`.
+- O que essas duas flags **desbloqueiam no sistema legado** (checagem de sessão/empresa em
+  `repo-php-legado/application/libraries/Usuarios.php` e afins) é código de **outro repositório** —
+  não deduzir o comportamento aqui sem ler o `repo-php-legado`.
 
 Alterações aqui impactam Omie/Superlógica — validar escopo do card e, se o comportamento do lado
-CRM importar, confirmar em `solides-crm`, não supor.
+Integração cruzada: confirmar no outro repositório, não supor.
 
 ## Regras de implementação
 

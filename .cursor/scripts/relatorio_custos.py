@@ -211,7 +211,7 @@ def relatorio_md(r: dict, dias: int) -> str:
     hoje = datetime.now().strftime("%Y-%m-%d")
     total = r["custo_total"]
     L = [
-        f"# Relatório de custos — Cursor · projeto `cit`",
+        f"# Relatório de custos — Cursor · projeto Brain",
         "",
         f"**Gerado em:** {hoje} · **Janela:** últimos {dias} dias · "
         f"**Sessões:** {r['sessoes']} · **Respostas do modelo:** {r['mensagens']}",

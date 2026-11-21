@@ -74,10 +74,10 @@ Antes/depois sem marcação = **recusa** em I2-val.
 
 ```html
 <ol>
-  <li>Usuário aceita o termo → CIT grava o aceite <em>(alterado)</em></li>
-  <li>CIT monta o JWT e redireciona ao checkout <em>(novo)</em></li>
-  <li>Checkout tokeniza o cartão e cria o pedido <em>(inalterado)</em></li>
-  <li>Webhook retorna ao CIT → CIT dispara o ganho <em>(novo)</em></li>
+  <li>Usuário conclui ação no sistema A → serviço grava o estado <em>(alterado)</em></li>
+  <li>Sistema A emite token e redireciona ao checkout <em>(novo)</em></li>
+  <li>Checkout processa o pagamento <em>(inalterado)</em></li>
+  <li>Webhook retorna ao sistema A → fluxo de ganho dispara <em>(novo)</em></li>
 </ol>
 ```
 

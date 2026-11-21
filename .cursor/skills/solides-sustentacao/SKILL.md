@@ -1,11 +1,10 @@
 ---
 name: solides-sustentacao
 description: >-
-  Conduz cards e incidentes de QUALQUER repositório da frota Solides (cit,
-  solides-crm, partners, checkout, omie-adapter, hubspot-adapter,
-  gestao-adapter, debt-processing-service, payment-processing-service etc.)
-  pelo ciclo de sustentação (S1–S6) e implementação (I1–I15) do Brain — não é
-  exclusiva do Solides CRM, é a skill de processo que roda em todos os repos.
+  Conduz cards e incidentes de QUALQUER repositório da frota Solides (partners,
+  checkout, omie-adapter, hubspot-adapter, gestao-adapter, debt-processing-service,
+  payment-processing-service etc.) pelo ciclo de sustentação (S1–S6) e implementação
+  (I1–I15) do Brain — skill de processo transversal.
   Use sempre que o usuário mencionar card, incidente, sustentação, análise,
   plano, evidências, homol, deploy ou fluxo por card, em qualquer repositório
   aberto na IDE.

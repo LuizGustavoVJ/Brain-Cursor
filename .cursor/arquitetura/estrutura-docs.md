@@ -40,14 +40,14 @@ docs/
 ## Convenções de nomenclatura
 
 > **REGRA CRÍTICA — pasta de evidências NUNCA é só o número.**
-> A pasta de evidências é sempre `{tema-slug}/{card-id}-{Titulo-Slug}` (ex.: `login-unificado-lovecrm/152069-Login-Unificado-Parceiros-LoveCRM`). Já os arquivos de `analises/` e `fluxos/` usam só `{card-id}.md` (ex.: `152069.md`). Monte o `{card-id}` (número) e o `{Titulo-Slug}` (título) **uma vez** e reutilize em todo o card.
+> A pasta de evidências é sempre `{tema-slug}/{card-id}-{Titulo-Slug}` (ex.: `login-unificado-exemplo/152069-Login-Unificado-Parceiros-sistema-legado-exemplo`). Já os arquivos de `analises/` e `fluxos/` usam só `{card-id}.md` (ex.: `152069.md`). Monte o `{card-id}` (número) e o `{Titulo-Slug}` (título) **uma vez** e reutilize em todo o card.
 
 | Elemento | Formato | Exemplo |
 |----------|---------|---------|
 | **`{tipo}`** | kebab-case; domínio do problema / pasta por demanda | `automacao-creditos`, `incidentes` |
 | **`{card-id}`** | **número do card** (só dígitos) — usado no nome de `analises/`/`fluxos/` e como prefixo da pasta de evidências | `152069`, `146737` |
-| **`{tema-slug}`** *(só evidências)* | kebab-case; tema/assunto da demanda — pasta agrupadora sob `docs/evidencias/{html\|assets\|anexos}/` | `login-unificado-lovecrm` |
-| **`{Titulo-Slug}`** *(só evidências)* | título do card em kebab-case capitalizado, **sem** o número — compõe a pasta como `{card-id}-{Titulo-Slug}` | `Login-Unificado-Parceiros-LoveCRM` |
+| **`{tema-slug}`** *(só evidências)* | kebab-case; tema/assunto da demanda — pasta agrupadora sob `docs/evidencias/{html\|assets\|anexos}/` | `login-unificado-exemplo` |
+| **`{Titulo-Slug}`** *(só evidências)* | título do card em kebab-case capitalizado, **sem** o número — compõe a pasta como `{card-id}-{Titulo-Slug}` | `Login-Unificado-Parceiros-sistema-legado-exemplo` |
 | **Análise** | `{card-id}.md` em `docs/analises/{tipo}/` | `docs/analises/{tipo}/{card-id}.md` |
 | **Fluxo** | `{card-id}.md` em `docs/fluxos/{tipo}/` | mesmo nome da análise |
 | **HTML do plano** *(I2-html)* | sempre `plano.html` na pasta do card | `docs/evidencias/html/{tema-slug}/{card-id}-{Titulo-Slug}/plano.html` |
