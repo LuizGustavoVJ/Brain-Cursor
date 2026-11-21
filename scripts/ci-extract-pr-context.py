@@ -10,7 +10,8 @@ ADO_URL_RE = re.compile(
     r"https://dev\.azure\.com/[^\s)>]+/_workitems/edit/(?P<id>\d+)", re.I
 )
 ADO_FIELD_RE = re.compile(
-    r"(?im)card\s*ado\s*url[^:\n]*:\s*\**\s*(?P<url>https://\S+)"
+    r"(?im)card\s*ado\s*url:\*+\s+(?P<url>https://\S+)|"
+    r"card\s*ado\s*url[^:\n]{0,40}:\s*(?P<url2>https://\S+)"
 )
 TITLE_FIELD_RE = re.compile(
     r"(?im)(?:t[ií]tulo|title)\s*(?:do\s*card)?[^:\n]*:\s*\**\s*(?P<t>.+?)\s*$"
@@ -22,7 +23,10 @@ CARD_BRANCH_RE = re.compile(
 
 def main() -> int:
     branch = sys.argv[1] if len(sys.argv) > 1 else ""
-    body = sys.stdin.read() if not sys.stdin.isatty() else (sys.argv[2] if len(sys.argv) > 2 else "")
+    if len(sys.argv) > 2:
+        body = sys.argv[2]
+    else:
+        body = sys.stdin.read()
     pr_number = sys.argv[3] if len(sys.argv) > 3 else ""
     pr_title = sys.argv[4] if len(sys.argv) > 4 else ""
     pr_url = sys.argv[5] if len(sys.argv) > 5 else ""
@@ -35,7 +39,7 @@ def main() -> int:
     ado_url = ""
     fm = ADO_FIELD_RE.search(body)
     if fm:
-        ado_url = fm.group("url").strip()
+        ado_url = (fm.group("url") or fm.group("url2") or "").strip()
     if not ado_url:
         for m in ADO_URL_RE.finditer(body):
             ado_url = m.group(0)
