@@ -30,4 +30,7 @@ protect_branch staging 1
 # main: promoção via PR automático staging→main; revisão opcional (0) se Luiz aprova só no staging
 protect_branch main 0
 
+gh api --method PATCH "repos/${REPO}" -f delete_branch_on_merge=true >/dev/null
+echo "delete_branch_on_merge=true (só main e staging permanecem após merge dos PRs)."
+
 echo "Concluído. Ajuste contexts se o nome do job CI mudar ($CI_CONTEXT)."

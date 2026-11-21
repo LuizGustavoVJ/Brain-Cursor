@@ -9,6 +9,13 @@ Este documento descreve o fluxo de branches do Brain reconciliado com CI/CD no G
 | `main` | Produção / referência estável do harness |
 | `staging` | Integração — **todo PR de feature mira aqui** |
 | `<card>_release` | Recorte a partir de `main` atualizada (regra Brain em `.cursor/frota/regras.md` §3) |
+
+### Branches permanentes vs temporárias
+
+No GitHub deste repositório ficam só **`main`** e **`staging`** de forma contínua. Branches de PR
+(`<card>_…`, `feat/…`, `cursor/…`) são **temporárias**: ao mergear o PR, a head branch é **apagada**
+(`delete branch on merge` habilitado nas configurações do repo). Não mantenha branch de feature
+aberta após o merge; o histórico fica no PR e nos commits em `staging`/`main`.
 | `<card>_<descricao>` | Trabalho do card a partir da release — **nunca** nascer de `staging` |
 | `<card>_etapa_N_staging_<desc>` | Só para conflitos de MR **contra** staging, sem merge de staging na branch do card |
 

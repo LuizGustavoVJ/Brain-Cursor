@@ -7,6 +7,7 @@
 
 - **Branch:** deve seguir `<card>_<descricao>` (ex.: `167697_corrigir-hook`) ou `feat/bcge-12-...` para demandas do Brain-Cursor.
 - **Base:** `staging` (não abrir PR para `main` diretamente).
+- **Após o merge:** a branch deste PR será **removida** automaticamente (política do repo; permanecem só `main` e `staging`).
 
 ## Checklist
 
