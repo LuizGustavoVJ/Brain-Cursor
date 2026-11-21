@@ -1,16 +1,22 @@
 name: Promote staging to main
 
 on:
-  push:
-    branches: [staging]
+  workflow_run:
+    workflows: [Post-merge verify and rollback]
+    types: [completed]
 
 permissions:
   contents: write
   pull-requests: write
+  actions: read
 
 jobs:
   open-promotion-pr:
     runs-on: ubuntu-latest
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'staging' &&
+      github.event.workflow_run.event == 'push'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,7 +33,7 @@ jobs:
             exit 0
           fi
           TITLE="Promoção: staging → main ($(date -u +%Y-%m-%dT%H:%MZ))"
-          BODY="PR automático após merge em \`staging\`. Revisão em \`main\` pode ser 0 se a aprovação ocorreu no PR para staging (ver docs/operacao-repositorio.md)."
+          BODY="PR automático após \`staging\` verde no gate pós-merge. Esteira **full-auto**: 0 revisões; merge quando \`lint-and-test\` estiver verde (ver docs/esteira-full-auto.md)."
           EXISTING=$(gh pr list --base main --head staging --state open --json number -q '.[0].number' || true)
           if [ -n "$EXISTING" ] && [ "$EXISTING" != "null" ]; then
             gh pr edit "$EXISTING" --title "$TITLE" --body "$BODY"
@@ -52,4 +58,4 @@ jobs:
         run: |
           NUM=$(gh pr list --base main --head staging --state open --json number -q '.[0].number')
           [ -n "$NUM" ] || exit 0
-          gh pr merge "$NUM" --auto --merge || echo "Auto-merge pode exigir checks/proteção em main"
+          gh pr merge "$NUM" --auto --merge || echo "Auto-merge aguarda CI do PR; falha de CI bloqueia merge (sem rollback)."

@@ -25,39 +25,66 @@ Regras críticas (AGENTS.md e `usuario/memoria/git-fluxo-cit.md`):
 - Ordem card_release: `main` → push release vazia → branch de trabalho da release.
 - No **Brain-Cursor** (este repo), homologação = `staging`; promoção para `main` é **PR automático** `staging` → `main` após merge em staging.
 
-### Aprovação no GitHub (não clique em Merge)
+### Gaps vs GitLab CIT (full-auto)
 
-O GitHub sempre mostra o botão **Merge**, mas com proteção de branch ele fica **desabilitado** até CI verde + **1 Approve**.
+No cit legado, deploy homol é manual. Aqui o GitHub **mergeia automaticamente** quando o CI passa; **não há** `/approve` nem revisão obrigatória na plataforma (decisão operacional de Luiz).
 
-**Sua ação:** em *Files changed* → *Review changes* → **Approve** (comentário opcional). **Não** use *Merge pull request*.
-
-Depois do **Approve**, o workflow `auto-merge.yml` faz o merge sozinho (bot/Actions). O mesmo vale para PR `staging` → `main` (promoção).
-
-## Fluxo CI/CD
+## Fluxo CI/CD (full-auto)
 
 ```mermaid
 flowchart LR
   A[Branch de trabalho] -->|PR| B[staging]
   B -->|CI lint+test| C{Verde?}
-  C -->|sim| D[E-mail + Slack]
+  C -->|sim| D[Auto-merge staging]
   C -->|não| E[E-mail + Slack falha]
-  D --> F[Aprovação Luiz]
-  F --> G[Auto-merge em staging]
-  G --> H[PR automático staging→main]
+  D --> F[E-mail + Slack merge]
+  D --> G[PR automático staging→main]
+  G -->|CI + auto-merge| H[main atualizada]
+  H --> I[E-mail + Slack promoção]
 ```
 
 | Workflow | Gatilho | Função |
 |----------|---------|--------|
-| `ci.yml` | PR/push em `staging` | `scripts/ci-lint.sh`, `scripts/ci-test.sh` |
-| `notify.yml` | CI concluído (PR) | Notifica e-mail + Slack |
-| `auto-merge.yml` | Review `approved` (Luiz) | Merge automático via API após checks |
-| `promote-main.yml` | Push em `staging` | Abre/atualiza PR `staging` → `main` |
+| `ci.yml` | PR em `staging`/`main`, push em `staging` | `scripts/ci-lint.sh`, `scripts/ci-test.sh` |
+| `auto-merge.yml` | CI concluído (PR) | Merge automático sem review humana |
+| `notify.yml` | CI, merges, falhas de workflows | E-mail + Slack (PT-BR) |
+| `post-merge-verify.yml` | Push em `staging`/`main` | Revalida CI; **rollback** se falhar |
+| `promote-main.yml` | Pós-merge verde em `staging` | Abre/atualiza PR `staging` → `main` + auto-merge |
 
-Check de status obrigatório sugerido: **`lint-and-test`** (job do workflow CI).
+Check de status obrigatório: **`lint-and-test`** (job do workflow CI).
 
-Proteção de branch: `bash scripts/apply-branch-protection.sh` (requer `gh` com permissão admin no repo).
+### Proteção de branch
 
-**Settings → Actions → General:** permissões **Read and write** e marque **Allow GitHub Actions to create and approve pull requests** (senão `promote-main` falha com `createPullRequest`).
+```bash
+GITHUB_REPOSITORY=LuizGustavoVJ/Brain-Cursor bash scripts/apply-branch-protection.sh
+```
+
+| Parâmetro | Valor | Notas |
+|-----------|--------|--------|
+| `required_approving_review_count` | **0** | Sem gate humano no GitHub |
+| `required_status_checks` | `lint-and-test` (strict) | CI deve passar |
+| `enforce_admins` | false | Admin segue PR + checks (ok para solo auto) |
+| `delete_branch_on_merge` | true | Apaga head branch após merge |
+
+**Trade-off:** código entra em `staging`/`main` só com CI verde, sem clicar Approve. Use e-mail/Slack para rastreio.
+
+`approve-comment.yml` e `/approve` foram **removidos**.
+
+**Settings → Actions → General:** permissões **Read and write** e **Allow GitHub Actions to create and approve pull requests** (para `promote-main`).
+
+## O que dispara alertas
+
+| Evento | Assunto (exemplo) | Canais |
+|--------|-------------------|--------|
+| CI falhou em PR | `[FALHA CI] PR #N — branch …` | E-mail + Slack |
+| CI OK em PR | `[CI OK] … merge automático em andamento` | E-mail + Slack |
+| Merge em `staging` | `[MERGE] PR #N integrado em staging` | E-mail + Slack |
+| Promoção `staging`→`main` | `[PROMOÇÃO] staging → main concluída` | E-mail + Slack |
+| Falha em `auto-merge`, `promote-main`, `notify` | `[ERRO WORKFLOW] …` | E-mail + Slack |
+| Rollback pós-merge | `[ROLLBACK] …` | E-mail + Slack |
+| Falha após rollback | `[CRÍTICO] …` | E-mail + Slack |
+
+Detalhe do rollback: **`docs/esteira-full-auto.md`** (alinhado a `gestor-de-risco`).
 
 ## Secrets obrigatórios (Settings → Secrets → Actions)
 
@@ -85,7 +112,7 @@ MCP Slack não é obrigatório. Passos:
 2. **Apps → Incoming Webhooks** → adicione ao canal → copie a URL.
 3. Grave como secret `SLACK_WEBHOOK_URL` no repositório.
 
-Mensagens usam o mesmo texto do e-mail (assunto “PR para aprovar” quando CI verde; prefixo `[FALHA CI]` quando falha).
+Mensagens espelham o e-mail (ver tabela de alertas acima).
 
 ## Template de PR
 
@@ -106,4 +133,4 @@ GITHUB_REPOSITORY=LuizGustavoVJ/Brain-Cursor bash scripts/apply-branch-protectio
 
 - `bash .cursor/scripts/frota.sh lint` valida modelos Cursor legados (`haiku|sonnet|...`) e **falha** no estado atual; o CI usa lint estrutural em `ci-lint.sh`. Atualizar `frota.sh` é demanda separada.
 - Auto-merge exige **Allow auto-merge** habilitado no repositório (Settings → General).
-- PR de promoção `staging` → `main` pode exigir ajuste de proteção em `main` (`apply-branch-protection.sh` usa 0 revisões em `main` por padrão).
+- Esteira full-auto **não substitui** revisão de código fora do GitHub — use ADO + Slack se necessário.
