@@ -97,6 +97,19 @@ GITHUB_REPOSITORY=LuizGustavoVJ/Brain-Cursor bash scripts/apply-branch-protectio
 - `allow_auto_merge=true` no repo.
 - Actions: **Read and write** + permitir criar/aprovar PRs (promoção).
 
+## Bootstrap em `main` (workflow_run)
+
+O workflow `auto-merge.yml` dispara por `workflow_run` e o GitHub carrega a definição da **default branch (`main`)**. Até os workflows novos estarem em `main`, o listener antigo (`Auto-merge after approval`) ignorava CI verde — ex.: PR #8 mergeado manualmente em staging.
+
+**Procedimento (BCGE-18):**
+
+1. Garantir conteúdo em `staging` (incl. `post-merge-verify`, `auto-merge after CI`, sem `approve-comment.yml`).
+2. Abrir PR **`staging` → `main`** e aguardar `lint-and-test` no PR.
+3. Mergear o PR de promoção **uma vez** via `gh pr merge` (ou botão) se o auto-merge ainda não estiver ativo em `main`.
+4. A partir daí, `workflow_run` + job `merge-staging-pr` em `ci.yml` cobrem PRs seguintes.
+
+**Reforço:** `ci.yml` inclui job `merge-staging-pr` (após `lint-and-test`) para PRs → `staging`, reduzindo dependência só da versão em `main`.
+
 ## Skill Brain
 
 `.cursor/skills/github-actions-cicd/SKILL.md` — propaga para `especialista-git`; rollback estratégico → `gestor-de-risco`.
