@@ -25,17 +25,17 @@ Regras críticas (AGENTS.md e `usuario/memoria/git-fluxo-cit.md`):
 - Ordem card_release: `main` → push release vazia → branch de trabalho da release.
 - No **Brain-Cursor** (este repo), homologação = `staging`; promoção para `main` é **PR automático** `staging` → `main` após merge em staging.
 
-### Aprovação no GitHub (não clique em Merge)
+### Aprovação no GitHub (não use Approve nem Merge na UI)
 
-O GitHub sempre mostra o botão **Merge**, mas com proteção de branch ele fica **desabilitado** até CI verde + **1 Approve**.
+| Regra | Detalhe |
+|--------|---------|
+| **Approve (autor)** | O GitHub **não permite** que o autor do PR clique em **Approve** no próprio PR — isso é regra da plataforma, não só proteção de branch. |
+| **Merge** | O botão **Merge pull request** aparece sempre, mas fica **cinza/desabilitado** até **CI verde** (`lint-and-test`) **e** existir **1 review APPROVE** (no solo, só o bot após `/approve`). |
+| **Sua ação** | Com CI verde, comente **exatamente** no corpo do comentário: `/approve` |
 
-**Sua ação (repositório solo):** o GitHub **não** deixa o autor marcar **Approve** no próprio PR. Com CI verde, comente no PR:
+O workflow `approve-comment.yml` (na branch `main`) registra **APPROVE** como `github-actions[bot]`, depois faz o merge. **Não** clique em *Approve* nem em *Merge* na interface, salvo emergência com bypass de admin.
 
-`/approve`
-
-O workflow `approve-comment.yml` faz o merge. **Não** use *Merge pull request* manualmente, salvo emergência.
-
-(O workflow `auto-merge.yml` por review continua útil se outro usuário for revisor no futuro.)
+(O workflow `auto-merge.yml` continua útil se outro usuário for revisor no futuro — review humana distinta do autor.)
 
 ## Fluxo CI/CD
 
@@ -54,7 +54,8 @@ flowchart LR
 |----------|---------|--------|
 | `ci.yml` | PR/push em `staging` | `scripts/ci-lint.sh`, `scripts/ci-test.sh` |
 | `notify.yml` | CI concluído (PR) | Notifica e-mail + Slack |
-| `auto-merge.yml` | Review `approved` (Luiz) | Merge automático via API após checks |
+| `approve-comment.yml` | Comentário `/approve` (Luiz) em PR aberto | APPROVE do bot + merge após CI |
+| `auto-merge.yml` | Review `approved` (não-autor) | Merge automático via API após checks |
 | `promote-main.yml` | Push em `staging` | Abre/atualiza PR `staging` → `main` |
 
 Check de status obrigatório sugerido: **`lint-and-test`** (job do workflow CI).
@@ -110,4 +111,5 @@ GITHUB_REPOSITORY=LuizGustavoVJ/Brain-Cursor bash scripts/apply-branch-protectio
 
 - `bash .cursor/scripts/frota.sh lint` valida modelos Cursor legados (`haiku|sonnet|...`) e **falha** no estado atual; o CI usa lint estrutural em `ci-lint.sh`. Atualizar `frota.sh` é demanda separada.
 - Auto-merge exige **Allow auto-merge** habilitado no repositório (Settings → General).
-- PR de promoção `staging` → `main` pode exigir ajuste de proteção em `main` (`apply-branch-protection.sh` usa 0 revisões em `main` por padrão).
+- PR de promoção `staging` → `main` segue **1 review** em `main`; use `/approve` no PR de promoção como nos demais.
+- `issue_comment` só dispara workflows na **branch padrão (`main`)** — mantenha `approve-comment.yml` em `main`.
