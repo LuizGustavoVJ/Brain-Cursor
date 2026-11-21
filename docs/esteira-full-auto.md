@@ -95,7 +95,7 @@ GITHUB_REPOSITORY=LuizGustavoVJ/Brain-Cursor bash scripts/apply-branch-protectio
 ```
 
 - `allow_auto_merge=true` no repo.
-- Actions: **Read and write** + permitir criar/aprovar PRs (promoção).
+- Actions: **Read and write** + permitir criar/aprovar PRs (promoção). Sem isso, `merge-staging-pr` retorna 403.
 
 ## Bootstrap em `main` (workflow_run)
 
